@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "1002701264389",
+    "project_id": "flutter-firebase-dersler-e4130",
+    "storage_bucket": "flutter-firebase-dersler-e4130.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002701264389:android:a8a3ebf0939b9f15ebee6c",
+        "android_client_info": {
+          "package_name": "com.example.flutter_whatsapp_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002701264389-esree8rurspf6eeqe8toco7bak6vfm3i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqQhW4DDzMgHBe8k6K3wCJvT3RVBZt4ZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002701264389-esree8rurspf6eeqe8toco7bak6vfm3i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1002701264389-1p5e666i54a7c0bvpor0qr5klhqr90mq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ozgurerdogan.flutterFirebaseDersleri"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002701264389:android:5e1e1760dbba8348ebee6c",
+        "android_client_info": {
+          "package_name": "com.ozgurerdogan.flutter_firebase_dersleri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002701264389-esree8rurspf6eeqe8toco7bak6vfm3i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqQhW4DDzMgHBe8k6K3wCJvT3RVBZt4ZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002701264389-esree8rurspf6eeqe8toco7bak6vfm3i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1002701264389-1p5e666i54a7c0bvpor0qr5klhqr90mq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ozgurerdogan.flutterFirebaseDersleri"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
