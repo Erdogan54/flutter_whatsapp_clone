@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_whatsapp_clone/app/home_page.dart';
 import 'package:flutter_whatsapp_clone/common_widget/social_login_button.dart';
-import 'package:flutter_whatsapp_clone/get_it.dart';
+
 import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
