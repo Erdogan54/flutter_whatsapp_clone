@@ -37,14 +37,18 @@ class FakeAuthenticationService extends AuthBase {
   }
   
   @override
-  Future<UserModel?> signInWithEmail() {
+  Future<UserModel?> signInWithEmail({required String email, required String password}) {
     // TODO: implement signInWithEmail
     throw UnimplementedError();
   }
   
   @override
-  Future<UserModel?> signUpEmailPass() {
+  Future<UserModel?> signUpEmailPass({required String email, required String password}) {
     // TODO: implement signUpEmailPass
     throw UnimplementedError();
   }
+  
+
+  
+ 
 }

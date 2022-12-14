@@ -10,14 +10,13 @@ import '../service/fake_auth_service.dart';
 enum AppMode { DEBUG, RELEASE }
 
 class UserRepository implements AuthBase {
-
   var fakeDb = getIt<FakeAuthenticationService>();
   var fireDb = getIt<FirebaseAuthService>();
 
   AppMode appMode = AppMode.RELEASE;
 
   @override
-  Future<UserModel?> currentUser() async {
+  Future<UserModel?>? currentUser() async {
     if (appMode == AppMode.DEBUG) {
       return await fakeDb.currentUser();
     } else {
@@ -26,8 +25,8 @@ class UserRepository implements AuthBase {
   }
 
   @override
-  Future<UserModel?> signInAnonymously()async {
-     if (appMode == AppMode.DEBUG) {
+  Future<UserModel?> signInAnonymously() async {
+    if (appMode == AppMode.DEBUG) {
       return await fakeDb.signInAnonymously();
     } else {
       return await fireDb.signInAnonymously();
@@ -35,41 +34,47 @@ class UserRepository implements AuthBase {
   }
 
   @override
-  Future<bool> signOut()async {
-     if (appMode == AppMode.DEBUG) {
+  Future<bool> signOut() async {
+    if (appMode == AppMode.DEBUG) {
       return await fakeDb.signOut();
     } else {
-      return await  fireDb.signOut();
+      return await fireDb.signOut();
     }
   }
-  
+
   @override
   Future<UserModel?> signInWithGoogle() async {
-     if (appMode == AppMode.DEBUG) {
+    if (appMode == AppMode.DEBUG) {
       return await fakeDb.signInWithGoogle();
     } else {
-      return await  fireDb.signInWithGoogle();
+      return await fireDb.signInWithGoogle();
     }
   }
-  
+
   @override
-  Future<UserModel?> signInWithFacebook() async  {
+  Future<UserModel?> signInWithFacebook() async {
     if (appMode == AppMode.DEBUG) {
       return await fakeDb.signInWithFacebook();
     } else {
-      return await  fireDb.signInWithFacebook();
+      return await fireDb.signInWithFacebook();
     }
   }
-  
+
   @override
-  Future<UserModel?> signInWithEmail() {
-    // TODO: implement signInWithEmail
-    throw UnimplementedError();
+  Future<UserModel?> signInWithEmail({required String email, required String password}) async {
+    if (appMode == AppMode.DEBUG) {
+      return await fakeDb.signInWithEmail(email: email, password: password);
+    } else {
+      return await fireDb.signInWithEmail(email: email, password: password);
+    }
   }
-  
+
   @override
-  Future<UserModel?> signUpEmailPass() {
-    // TODO: implement signUpEmailPass
-    throw UnimplementedError();
+  Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
+    if (appMode == AppMode.DEBUG) {
+      return await fakeDb.signUpEmailPass(email: email, password: password);
+    } else {
+      return await fireDb.signUpEmailPass(email: email, password: password);
+    }
   }
 }

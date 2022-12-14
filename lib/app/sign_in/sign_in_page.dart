@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_whatsapp_clone/app/sign_in/email_sifre_kayit_page.dart';
-import 'package:flutter_whatsapp_clone/common_widget/social_login_button.dart';
-import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
+import 'email_sifre_kayit_page.dart';
+import '../../common_widget/social_login_button.dart';
+import '../../view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
@@ -32,6 +31,7 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserViewModel userVm = Provider.of<UserViewModel>(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text("WhatsApp Clone"),
@@ -44,13 +44,19 @@ class SignInPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Spacer(flex: 8),
             oturumAcText(),
-            SizedBox(height: 100.h),
+            //SizedBox(height: 100.h),
+            Spacer(),
             googleGirisButton(context, userVm),
+            Spacer(),
             facebookGirisButton(context, userVm),
+            Spacer(),
             emailVeSifreGirisButton(context),
+            Spacer(),
             anonymousGirisButton(context, userVm),
-            Flexible(child: SizedBox(height: 300.sp))
+            Spacer(flex: 10),
+            //Flexible(child: SizedBox(height: 300.sp))
           ],
         ),
       ),
@@ -59,12 +65,14 @@ class SignInPage extends StatelessWidget {
 
   Widget googleGirisButton(context, userVm) {
     return SocialLoginButton(
+        //buttonHeight: 60.sp,
+        //titleSize: 30.sp,
+        //iconSize:40.sp
+        // radius: 40.r,
         buttonIcon: Image.asset(
           "assets/images/google.png",
           fit: BoxFit.contain,
-          height: 70.h,
         ),
-        radius: 40.r,
         buttonColor: Colors.white,
         buttonText: "Google ile Oturum Aç",
         textColor: Colors.black,
@@ -75,14 +83,11 @@ class SignInPage extends StatelessWidget {
 
   Widget facebookGirisButton(context, userVm) {
     return SocialLoginButton(
-      radius: 40.r,
       buttonIcon: Image.asset(
         "assets/images/facebook.png",
         fit: BoxFit.contain,
-        height: 70.h,
       ),
       buttonColor: const Color(0xFF334D92),
-      //  radius: 10,
       buttonText: "Facebook ile Oturum Aç",
       textColor: Colors.white,
       onPressed: () {
@@ -93,11 +98,9 @@ class SignInPage extends StatelessWidget {
 
   Widget emailVeSifreGirisButton(context) {
     return SocialLoginButton(
-      radius: 40.r,
       buttonIcon: Image.asset(
         "assets/images/gmail.png",
         fit: BoxFit.contain,
-        height: 70.h,
       ),
       buttonColor: Colors.red,
       buttonText: "Email ve Şifre ile Giriş Yap",
@@ -110,8 +113,9 @@ class SignInPage extends StatelessWidget {
 
   Widget anonymousGirisButton(context, userVm) {
     return SocialLoginButton(
-      radius: 40.r,
-      buttonIcon: Icon(Icons.supervised_user_circle, size: 70.w),
+      buttonIcon: const Icon(
+        Icons.supervised_user_circle,
+      ),
       buttonColor: Colors.teal,
       buttonText: "Misafir Olarak Giriş Yap",
       textColor: Colors.white,
@@ -125,7 +129,7 @@ class SignInPage extends StatelessWidget {
     return Text(
       "Oturum Açın",
       textAlign: TextAlign.center,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 80.sp),
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 90.sp),
     );
   }
 }

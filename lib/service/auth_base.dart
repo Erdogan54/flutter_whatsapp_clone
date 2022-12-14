@@ -3,12 +3,12 @@ import '../models/user_model.dart';
 
 abstract class AuthBase {
  
-  Future<UserModel?> currentUser();
+  Future<UserModel?>? currentUser();
   Future<UserModel?> signInAnonymously();
   Future<bool> signOut();
   Future<UserModel?> signInWithGoogle();
   Future<UserModel?> signInWithFacebook();
-  Future<UserModel?> signUpEmailPass();
-  Future<UserModel?> signInWithEmail();
+  Future<UserModel?> signUpEmailPass({required String email,required String password});
+  Future<UserModel?> signInWithEmail({required String email,required String password});
 
 }

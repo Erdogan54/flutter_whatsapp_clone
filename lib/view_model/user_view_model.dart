@@ -26,12 +26,64 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   }
 
   @override
-  Future<UserModel?> currentUser() async {
+  Future<UserModel?>? currentUser() async {
     try {
       state = ViewState.Busy;
       return _user = await userRepo.currentUser();
     } on Exception catch (e) {
       debugPrint("ViewModel currentUser Error: $e");
+    } finally {
+      state = ViewState.Idle;
+    }
+    return null;
+  }
+
+  @override
+  Future<UserModel?> signInWithGoogle() async {
+    try {
+      state = ViewState.Busy;
+      return _user = await userRepo.signInWithGoogle();
+    } on Exception catch (e) {
+      debugPrint("ViewModel signInWithGoogle Error: $e");
+    } finally {
+      state = ViewState.Idle;
+    }
+    return null;
+  }
+
+  @override
+  Future<UserModel?> signInWithFacebook() async {
+    try {
+      state = ViewState.Busy;
+      return _user = await userRepo.signInWithFacebook();
+    } on Exception catch (e) {
+      debugPrint("ViewModel signInWithFacebook Error: $e");
+    } finally {
+      state = ViewState.Idle;
+    }
+    return null;
+  }
+
+  @override
+  Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
+    try {
+      state = ViewState.Busy;
+      return _user = await userRepo.signUpEmailPass(email: email, password: password);
+    } on Exception catch (e) {
+      debugPrint("ViewModel signUpWithFacebook Error: $e");
+    } finally {
+      state = ViewState.Idle;
+    }
+    return null;
+  }
+
+  @override
+  Future<UserModel?> signInWithEmail({required String email, required String password}) async {
+    try {
+      state = ViewState.Busy;
+      return _user = await userRepo.signInWithEmail(email: email, password: password);
+    } on Exception catch (e) {
+      debugPrint("ViewModel signInWithFacebook Error: $e");
     } finally {
       state = ViewState.Idle;
     }
@@ -59,48 +111,10 @@ class UserViewModel with ChangeNotifier implements AuthBase {
       _user = null;
       return result;
     } on Exception catch (e) {
-      debugPrint("ViewModel signInAnonymously Error: $e");
+      debugPrint("ViewModel signOut Error: $e");
     } finally {
       state = ViewState.Idle;
     }
     return false;
-  }
-  
-  @override
-  Future<UserModel?> signInWithGoogle() async {
-     try {
-      state = ViewState.Busy;
-      return _user = await userRepo.signInWithGoogle();
-    } on Exception catch (e) {
-      debugPrint("ViewModel signInWithGoogle Error: $e");
-    } finally {
-      state = ViewState.Idle;
-    }
-    return null;
-  }
-  
-  @override
-  Future<UserModel?> signInWithFacebook() async {
-    try {
-      state = ViewState.Busy;
-      return _user = await userRepo.signInWithFacebook();
-    } on Exception catch (e) {
-      debugPrint("ViewModel signInWithFacebook Error: $e");
-    } finally {
-      state = ViewState.Idle;
-    }
-    return null;
-  }
-  
-  @override
-  Future<UserModel?> signInWithEmail() {
-    // TODO: implement signInWithEmail
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<UserModel?> signUpEmailPass() {
-    // TODO: implement signUpEmailPass
-    throw UnimplementedError();
   }
 }

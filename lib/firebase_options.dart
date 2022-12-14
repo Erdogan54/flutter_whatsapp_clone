@@ -44,46 +44,42 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBzsPX3qSPsemVyFpOHu9-0VMGOBNyEzXM',
-    appId: '1:1002701264389:web:300606122aa4521eebee6c',
-    messagingSenderId: '1002701264389',
-    projectId: 'flutter-firebase-dersler-e4130',
-    authDomain: 'flutter-firebase-dersler-e4130.firebaseapp.com',
-    storageBucket: 'flutter-firebase-dersler-e4130.appspot.com',
-    measurementId: 'G-Z281GHSYPZ',
+    apiKey: 'AIzaSyCxsmTxg3RhL3oM7YVbMgtK73X3Hk0ENAc',
+    appId: '1:975839031218:web:96b2cc00bdc1343104beab',
+    messagingSenderId: '975839031218',
+    projectId: 'flutter-whatsapp-clone-3d171',
+    authDomain: 'flutter-whatsapp-clone-3d171.firebaseapp.com',
+    storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
+    measurementId: 'G-M6GZE6K25E',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDqQhW4DDzMgHBe8k6K3wCJvT3RVBZt4ZA',
-    appId: '1:1002701264389:android:a8a3ebf0939b9f15ebee6c',
-    messagingSenderId: '1002701264389',
-    projectId: 'flutter-firebase-dersler-e4130',
-    storageBucket: 'flutter-firebase-dersler-e4130.appspot.com',
+    apiKey: 'AIzaSyClf9kBvIh2jLo94zVz7Ifhbpurbjx-18s',
+    appId: '1:975839031218:android:40c815a14af6fdff04beab',
+    messagingSenderId: '975839031218',
+    projectId: 'flutter-whatsapp-clone-3d171',
+    storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDD78rfAQZXWyLbRry1Pf80BcE1qohsyos',
-    appId: '1:1002701264389:ios:88b7df6a953976c3ebee6c',
-    messagingSenderId: '1002701264389',
-    projectId: 'flutter-firebase-dersler-e4130',
-    storageBucket: 'flutter-firebase-dersler-e4130.appspot.com',
-    iosClientId: '1002701264389-gbmblhu2jlrk2fonqus606tk3nikmapi.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDUxZSOESwiL9jTyjHvajMi9HkdfWTQNAU',
+    appId: '1:975839031218:ios:af9972dfafa2d8fc04beab',
+    messagingSenderId: '975839031218',
+    projectId: 'flutter-whatsapp-clone-3d171',
+    storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
+    androidClientId: '975839031218-hj4oh6v41g6l8m7i6ppgng5pod0dpe97.apps.googleusercontent.com',
+    iosClientId: '975839031218-c985jfboa7js0il9krp513kifuum74nn.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutterWhatsappClone',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDD78rfAQZXWyLbRry1Pf80BcE1qohsyos',
-    appId: '1:1002701264389:ios:88b7df6a953976c3ebee6c',
-    messagingSenderId: '1002701264389',
-    projectId: 'flutter-firebase-dersler-e4130',
-    storageBucket: 'flutter-firebase-dersler-e4130.appspot.com',
-    iosClientId: '1002701264389-gbmblhu2jlrk2fonqus606tk3nikmapi.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDUxZSOESwiL9jTyjHvajMi9HkdfWTQNAU',
+    appId: '1:975839031218:ios:af9972dfafa2d8fc04beab',
+    messagingSenderId: '975839031218',
+    projectId: 'flutter-whatsapp-clone-3d171',
+    storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
+    androidClientId: '975839031218-hj4oh6v41g6l8m7i6ppgng5pod0dpe97.apps.googleusercontent.com',
+    iosClientId: '975839031218-c985jfboa7js0il9krp513kifuum74nn.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutterWhatsappClone',
   );
 }
-
-// Platform  Firebase App Id
-// web       1:1002701264389:web:300606122aa4521eebee6c
-// android   1:1002701264389:android:a8a3ebf0939b9f15ebee6c
-// ios       1:1002701264389:ios:88b7df6a953976c3ebee6c
-// macos     1:1002701264389:ios:88b7df6a953976c3ebee6c

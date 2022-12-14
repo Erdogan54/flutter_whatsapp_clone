@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-import 'package:flutter_whatsapp_clone/models/user_model.dart';
-import 'package:flutter_whatsapp_clone/service/auth_base.dart';
+import 'package:flutter_whatsapp_clone/main.dart';
+import '../models/user_model.dart';
+import 'auth_base.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService extends AuthBase {
@@ -16,6 +18,7 @@ class FirebaseAuthService extends AuthBase {
       return _userFromFirebase(user);
     } on Exception catch (e) {
       debugPrint("currentUser error: $e");
+      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
       return null;
     }
   }
@@ -34,6 +37,7 @@ class FirebaseAuthService extends AuthBase {
       return _userFromFirebase(credential.user);
     } on Exception catch (e) {
       print("sign in error: $e");
+      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
       return null;
     }
   }
@@ -42,14 +46,13 @@ class FirebaseAuthService extends AuthBase {
   Future<bool> signOut() async {
     try {
       await GoogleSignIn().signOut();
-      await _fireAuth.signOut();
-
       await FacebookLogin().logOut();
       await _fireAuth.signOut();
 
       return true;
     } on Exception catch (e) {
       debugPrint("sign out error: $e");
+      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
       return false;
     }
   }
@@ -59,16 +62,13 @@ class FirebaseAuthService extends AuthBase {
     GoogleSignInAccount? _googleAccount = await GoogleSignIn().signIn();
 
     if (_googleAccount != null) {
-      GoogleSignInAuthentication _googleAuth =
-          await _googleAccount.authentication;
+      GoogleSignInAuthentication _googleAuth = await _googleAccount.authentication;
       debugPrint(_googleAuth.accessToken);
       debugPrint("_googleAuth.idToken  ${_googleAuth.idToken}");
 
       if (_googleAuth.idToken != null && _googleAuth.accessToken != null) {
-        UserCredential _googleCredential = await _fireAuth.signInWithCredential(
-            GoogleAuthProvider.credential(
-                idToken: _googleAuth.idToken,
-                accessToken: _googleAuth.accessToken));
+        UserCredential _googleCredential =
+            await _fireAuth.signInWithCredential(GoogleAuthProvider.credential(idToken: _googleAuth.idToken, accessToken: _googleAuth.accessToken));
 
         print(_googleCredential.credential);
         return _userFromFirebase(_googleCredential.user);
@@ -84,11 +84,7 @@ class FirebaseAuthService extends AuthBase {
   Future<UserModel?> signInWithFacebook() async {
     final fb = FacebookLogin();
 
-    final res = await fb.logIn(permissions: [
-      FacebookPermission.publicProfile,
-      FacebookPermission.email,
-      FacebookPermission.userBirthday
-    ]);
+    final res = await fb.logIn(permissions: [FacebookPermission.publicProfile, FacebookPermission.email, FacebookPermission.userBirthday]);
 
     switch (res.status) {
       case FacebookLoginStatus.success:
@@ -96,8 +92,7 @@ class FirebaseAuthService extends AuthBase {
         print("acces token: $accessToken");
 
         if (accessToken != null) {
-          final _facebookCredential = await _fireAuth.signInWithCredential(
-              FacebookAuthProvider.credential(accessToken.token));
+          final _facebookCredential = await _fireAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
           debugPrint("facebook credential: ${_facebookCredential.credential}");
 
           final profile = await fb.getUserProfile();
@@ -108,8 +103,6 @@ class FirebaseAuthService extends AuthBase {
 
           final email = await fb.getUserEmail();
           print('And your email is $email');
-
-          
 
           return _userFromFirebase(_facebookCredential.user);
         }
@@ -122,20 +115,33 @@ class FirebaseAuthService extends AuthBase {
 
       case FacebookLoginStatus.error:
         print('Error while log in: ${res.error}');
+        scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(res.error.toString())));
         break;
     }
     return null;
   }
-  
+
   @override
-  Future<UserModel?> signInWithEmail() {
-    // TODO: implement signInWithEmail
-    throw UnimplementedError();
+  Future<UserModel?> signInWithEmail({required String email, required String password}) async {
+    try {
+      var credential = await _fireAuth.signInWithEmailAndPassword(email: email, password: password);
+      return _userFromFirebase(credential.user);
+    } on Exception catch (e) {
+      print("sign in error: $e");
+      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
+      return null;
+    }
   }
-  
+
   @override
-  Future<UserModel?> signUpEmailPass() {
-    // TODO: implement signUpEmailPass
-    throw UnimplementedError();
+  Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
+    try {
+      var credential = await _fireAuth.createUserWithEmailAndPassword(email: email, password: password);
+      return _userFromFirebase(credential.user);
+    } on Exception catch (e) {
+      print("sign up error: $e");
+      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
+      return null;
+    }
   }
 }
