@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 
 firebaseInitialzie() async {
-  print("firebase initialize basşladı..${DateTime.now()}");
+  print("firebase initialize başladı..${DateTime.now()}");
 
   WidgetsFlutterBinding.ensureInitialized();
 
   return await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
 }
