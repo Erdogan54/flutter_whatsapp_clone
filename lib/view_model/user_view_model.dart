@@ -9,9 +9,14 @@ import 'package:flutter_whatsapp_clone/service/auth_base.dart';
 enum ViewState { Idle, Busy }
 
 class UserViewModel with ChangeNotifier implements AuthBase {
-  ViewState _state = ViewState.Idle;
+  UserViewModel() {
+    currentUser();
+  }
   UserRepository userRepo = getIt<UserRepository>();
+  ViewState _state = ViewState.Idle;
   UserModel? _user;
+  String? emailErrorMessage;
+  String? passwordErrorMessage;
 
   UserModel? get user => _user;
   ViewState get state => _state;
@@ -21,8 +26,23 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     notifyListeners();
   }
 
-  UserViewModel() {
-    currentUser();
+  bool emailPassCheck({required String email, required String pass}) {
+    bool result = true;
+
+    if (pass.length < 6) {
+      passwordErrorMessage = "En az 6 karakter olmali";
+      return false;
+    } else {
+      passwordErrorMessage = null;
+    }
+    if (!email.contains("@")) {
+      emailErrorMessage = "Geçersiz email adresi";
+      return false;
+    } else {
+      emailErrorMessage = null;
+    }
+
+    return result;
   }
 
   @override
@@ -68,6 +88,8 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
     try {
       state = ViewState.Busy;
+      if (!emailPassCheck(email: email, pass: password)) return null;
+
       return _user = await userRepo.signUpEmailPass(email: email, password: password);
     } on Exception catch (e) {
       debugPrint("ViewModel signUpWithFacebook Error: $e");
@@ -81,6 +103,8 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?> signInWithEmail({required String email, required String password}) async {
     try {
       state = ViewState.Busy;
+      if (!emailPassCheck(email: email, pass: password)) return null;
+
       return _user = await userRepo.signInWithEmail(email: email, password: password);
     } on Exception catch (e) {
       debugPrint("ViewModel signInWithFacebook Error: $e");
@@ -108,8 +132,10 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     try {
       state = ViewState.Busy;
       bool result = await userRepo.signOut();
-      _user = null;
-      return result;
+      if (result) {
+        _user = null;
+        return result;
+      }
     } on Exception catch (e) {
       debugPrint("ViewModel signOut Error: $e");
     } finally {

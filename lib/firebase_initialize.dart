@@ -9,6 +9,7 @@ firebaseInitialzie() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   return await Firebase.initializeApp(
+     name: "flutter_whatsapp_clone",
     options: DefaultFirebaseOptions.currentPlatform,
   );
 }

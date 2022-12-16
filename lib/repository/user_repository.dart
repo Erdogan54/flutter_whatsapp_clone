@@ -6,75 +6,92 @@ import 'package:flutter_whatsapp_clone/service/auth_base.dart';
 import 'package:flutter_whatsapp_clone/service/firebase_auth_service.dart';
 
 import '../service/fake_auth_service.dart';
+import '../service/firestore_db_service.dart';
 
 enum AppMode { DEBUG, RELEASE }
 
 class UserRepository implements AuthBase {
-  var fakeDb = getIt<FakeAuthenticationService>();
-  var fireDb = getIt<FirebaseAuthService>();
+  final _fakeAuthService = getIt<FakeAuthService>();
+  final _fireAuthService = getIt<FirebaseAuthService>();
+  final _fireStoreDBService = getIt<FireStoreDbService>();
 
   AppMode appMode = AppMode.RELEASE;
 
   @override
   Future<UserModel?>? currentUser() async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.currentUser();
+      return await _fakeAuthService.currentUser();
     } else {
-      return await fireDb.currentUser();
+      return await _fireAuthService.currentUser();
     }
   }
 
   @override
   Future<UserModel?> signInAnonymously() async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signInAnonymously();
+      return await _fakeAuthService.signInAnonymously();
     } else {
-      return await fireDb.signInAnonymously();
+      final user = await _fireAuthService.signInAnonymously();
+      final result = await _fireStoreDBService.saveUser(user: user);
+      if (!result) return null;
+      return user;
     }
   }
 
   @override
   Future<bool> signOut() async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signOut();
+      return await _fakeAuthService.signOut();
     } else {
-      return await fireDb.signOut();
+      return await _fireAuthService.signOut();
     }
   }
 
   @override
   Future<UserModel?> signInWithGoogle() async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signInWithGoogle();
+      return await _fakeAuthService.signInWithGoogle();
     } else {
-      return await fireDb.signInWithGoogle();
+      final user = await _fireAuthService.signInWithGoogle();
+      final result = await _fireStoreDBService.saveUser(user: user);
+      if (!result) return null;
+      return user;
     }
   }
 
   @override
   Future<UserModel?> signInWithFacebook() async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signInWithFacebook();
+      return await _fakeAuthService.signInWithFacebook();
     } else {
-      return await fireDb.signInWithFacebook();
+      final user = await _fireAuthService.signInWithFacebook();
+      final result = await _fireStoreDBService.saveUser(user: user);
+      if (!result) return null;
+      return user;
     }
   }
 
   @override
   Future<UserModel?> signInWithEmail({required String email, required String password}) async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signInWithEmail(email: email, password: password);
+      return await _fakeAuthService.signInWithEmail(email: email, password: password);
     } else {
-      return await fireDb.signInWithEmail(email: email, password: password);
+      final user = await _fireAuthService.signInWithEmail(email: email, password: password);
+      final result = await _fireStoreDBService.saveUser(user: user);
+      if (!result) return null;
+      return user;
     }
   }
 
   @override
   Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
     if (appMode == AppMode.DEBUG) {
-      return await fakeDb.signUpEmailPass(email: email, password: password);
+      return await _fakeAuthService.signUpEmailPass(email: email, password: password);
     } else {
-      return await fireDb.signUpEmailPass(email: email, password: password);
+      final user = await _fireAuthService.signUpEmailPass(email: email, password: password);
+      final result = await _fireStoreDBService.saveUser(user: user);
+      if (!result) return null;
+      return user;
     }
   }
 }

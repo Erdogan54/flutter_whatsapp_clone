@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
@@ -10,24 +12,29 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService extends AuthBase {
   final FirebaseAuth _fireAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
+  Future<UserModel?> _userFromFirebase(User? user) async {
+    if (user != null) {
+     //DocumentSnapshot snapshot = await _fireStore.doc("user/${user.uid}").get();
+     // final getUser = UserModel.fromJson(snapshot.data().toString());
+
+     // scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text("hoş geldin ${getUser.email}")));
+      return UserModel(userId: user.uid, email: user.email);
+    }
+    return null;
+  }
 
   @override
   Future<UserModel?> currentUser() async {
     try {
-      User? user = await _fireAuth.currentUser;
+      User? user = _fireAuth.currentUser;
       return _userFromFirebase(user);
     } on Exception catch (e) {
       debugPrint("currentUser error: $e");
       scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
       return null;
     }
-  }
-
-  UserModel? _userFromFirebase(User? user) {
-    if (user != null) {
-      return UserModel(userId: user.uid);
-    }
-    return null;
   }
 
   @override
@@ -125,6 +132,7 @@ class FirebaseAuthService extends AuthBase {
   Future<UserModel?> signInWithEmail({required String email, required String password}) async {
     try {
       var credential = await _fireAuth.signInWithEmailAndPassword(email: email, password: password);
+
       return _userFromFirebase(credential.user);
     } on Exception catch (e) {
       print("sign in error: $e");

@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '975839031218',
     projectId: 'flutter-whatsapp-clone-3d171',
     authDomain: 'flutter-whatsapp-clone-3d171.firebaseapp.com',
+    databaseURL: 'https://flutter-whatsapp-clone-3d171-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
     measurementId: 'G-M6GZE6K25E',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:975839031218:android:40c815a14af6fdff04beab',
     messagingSenderId: '975839031218',
     projectId: 'flutter-whatsapp-clone-3d171',
+    databaseURL: 'https://flutter-whatsapp-clone-3d171-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
   );
 
@@ -66,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:975839031218:ios:af9972dfafa2d8fc04beab',
     messagingSenderId: '975839031218',
     projectId: 'flutter-whatsapp-clone-3d171',
+    databaseURL: 'https://flutter-whatsapp-clone-3d171-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
     androidClientId: '975839031218-hj4oh6v41g6l8m7i6ppgng5pod0dpe97.apps.googleusercontent.com',
     iosClientId: '975839031218-c985jfboa7js0il9krp513kifuum74nn.apps.googleusercontent.com',
@@ -77,6 +80,7 @@ class DefaultFirebaseOptions {
     appId: '1:975839031218:ios:af9972dfafa2d8fc04beab',
     messagingSenderId: '975839031218',
     projectId: 'flutter-whatsapp-clone-3d171',
+    databaseURL: 'https://flutter-whatsapp-clone-3d171-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-whatsapp-clone-3d171.appspot.com',
     androidClientId: '975839031218-hj4oh6v41g6l8m7i6ppgng5pod0dpe97.apps.googleusercontent.com',
     iosClientId: '975839031218-c985jfboa7js0il9krp513kifuum74nn.apps.googleusercontent.com',

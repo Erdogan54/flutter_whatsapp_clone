@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import 'app/initialize_page.dart';
-import 'app/landing_page.dart';
+import 'app/sign_in/initialize_page.dart';
+import 'app/sign_in/landing_page.dart';
 import 'firebase_initialize.dart';
 import 'get_it.dart';
 import 'view_model/user_view_model.dart';
