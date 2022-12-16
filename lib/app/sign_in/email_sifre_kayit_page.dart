@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_whatsapp_clone/app/home_page.dart';
+import 'package:flutter_whatsapp_clone/app/sign_in/home_page.dart';
 import 'package:flutter_whatsapp_clone/common_widget/social_login_button.dart';
 
 import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
@@ -55,7 +55,6 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
     super.initState();
 
     _emailController = TextEditingController();
-
     _passwordController = TextEditingController();
     _emailController.text = "erdgn54@gmail.com";
     _passwordController.text = "123456";
@@ -63,10 +62,21 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
 
   @override
   Widget build(BuildContext context) {
-    _buttonText = _formType == FormType.login ? "Giriş Yap" : "Kayıt Ol";
-    _linkText = _formType == FormType.login ? "Hesabınız yok mu? Kayıt Olun" : "Hesabınız var mı? Giriş Yap";
-    UserViewModel viewModel = Provider.of<UserViewModel>(context, listen: true);
-    if (viewModel.currentUser() != null) return const HomePage();
+    _changeText();
+    UserViewModel viewModel = context.watch<UserViewModel>();
+    if (viewModel.user != null) return const HomePage();
+    // if (viewModel.user != null) Navigator.pop(context);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _buildPage(context, viewModel),
+        _isBusyBuild(viewModel),
+      ],
+    );
+  }
+
+  Scaffold _buildPage(BuildContext context, UserViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Giriş/Kayıt"),
@@ -80,6 +90,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
               child: TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
+                    errorText: viewModel.emailErrorMessage,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.r)),
                     labelText: "Email",
                     hintText: "Enter email",
@@ -94,6 +105,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
               child: TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
+                    errorText: viewModel.passwordErrorMessage,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.r)),
                     labelText: "Password",
                     hintText: "Enter password",
@@ -104,7 +116,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
               ),
             ),
             SocialLoginButton(
-              onPressed: _formSubmit,
+              onPressed: viewModel.state == ViewState.Idle ? _formSubmit : null,
               buttonColor: Theme.of(context).primaryColor,
               buttonText: _buttonText ?? "",
             ),
@@ -117,5 +129,25 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
         ),
       ),
     );
+  }
+
+  void _changeText() {
+    _buttonText = _formType == FormType.login ? "Giriş Yap" : "Kayıt Ol";
+    _linkText = _formType == FormType.login ? "Hesabınız yok mu? Kayıt Olun" : "Hesabınız var mı? Giriş Yap";
+  }
+
+  _isBusyBuild(UserViewModel viewModel) {
+    return viewModel.state != ViewState.Busy
+        ? const SizedBox()
+        : Stack(
+            children: [
+              Container(
+                height: double.maxFinite,
+                width: double.maxFinite,
+                color: Colors.black.withOpacity(0.6),
+              ),
+              const Center(child: CircularProgressIndicator()),
+            ],
+          );
   }
 }

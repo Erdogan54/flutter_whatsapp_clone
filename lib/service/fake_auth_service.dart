@@ -2,20 +2,20 @@
 import 'package:flutter_whatsapp_clone/models/user_model.dart';
 import 'package:flutter_whatsapp_clone/service/auth_base.dart';
 
-class FakeAuthenticationService extends AuthBase {
+class FakeAuthService extends AuthBase {
   final String userId = "65346812151546";
 
   @override
   Future<UserModel?> currentUser() {
     return Future.delayed(const Duration(milliseconds: 200), () {
-      return UserModel(userId: userId);
+      return UserModel(userId: userId,email: "fakeuser@fake.com");
     });
   }
 
   @override
-  Future<UserModel?> signInAnonymously() {
-    return Future.delayed(const Duration(milliseconds: 200), () {
-      return UserModel(userId: userId);
+  Future<UserModel?> signInAnonymously() async {
+    return await Future.delayed(const Duration(milliseconds: 200), () {
+      return UserModel(userId: "signInAnonymously_$userId",email: "fakeuser@fake.com");
     });
   }
 
@@ -23,32 +23,32 @@ class FakeAuthenticationService extends AuthBase {
   Future<bool> signOut() {
     return Future.value(true);
   }
-  
-  @override
-  Future<UserModel?> signInWithGoogle() {
-    // TODO: implement signInWithGoogle
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<UserModel?> signInWithFacebook() {
-    // TODO: implement signInWithFacebook
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<UserModel?> signInWithEmail({required String email, required String password}) {
-    // TODO: implement signInWithEmail
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<UserModel?> signUpEmailPass({required String email, required String password}) {
-    // TODO: implement signUpEmailPass
-    throw UnimplementedError();
-  }
-  
 
-  
- 
+  @override
+  Future<UserModel?> signInWithGoogle() async {
+    return await Future.delayed(const Duration(milliseconds: 200), () {
+      return UserModel(userId: "google_user_id_123456",email: "fakeuser@fake.com");
+    });
+  }
+
+  @override
+  Future<UserModel?> signInWithFacebook() async {
+    return await Future.delayed(const Duration(milliseconds: 200), () {
+      return UserModel(userId: "facebook_user_id_123456",email: "fakeuser@fake.com");
+    });
+  }
+
+  @override
+  Future<UserModel?> signInWithEmail({required String email, required String password}) async {
+    return await Future.delayed(const Duration(milliseconds: 200), () {
+      return UserModel(userId: "signInWithEmail_user_id_123456",email: "fakeuser@fake.com");
+    });
+  }
+
+  @override
+  Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
+    return await Future.delayed(const Duration(milliseconds: 200), () {
+      return UserModel(userId: "signUpEmailPass_user_id_123456",email: "fakeuser@fake.com");
+    });
+  }
 }

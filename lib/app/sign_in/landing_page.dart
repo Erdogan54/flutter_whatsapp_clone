@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'initialize_page.dart';
-import 'sign_in/sign_in_page.dart';
+import 'sign_in_page.dart';
 
-import '../view_model/user_view_model.dart';
+import '../../view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class LandingPage extends StatefulWidget {
