@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/main.dart';
-import 'package:flutter_whatsapp_clone/models/user_model.dart';
-import 'package:flutter_whatsapp_clone/service/db_base.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+
+import '../main.dart';
+import '../models/user_model.dart';
+import 'db_base.dart';
 
 class FireStoreDbService implements DBBase {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
@@ -10,18 +12,29 @@ class FireStoreDbService implements DBBase {
   @override
   Future<bool> saveUser({required UserModel? user}) async {
     if (user == null) {
-      scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("user==null ; user not saved to firebase !")));
+      MyConst.debugP("FireStoreDbService.saveUser error: user == null");
       return false;
+    } else {
+      await _fireStore.collection("users").doc(user.userId).set(user.toMap());
+      return true;
     }
+  }
 
-    await _fireStore.collection("users").doc(user.userId).set(user.toMap());
+  @override
+  Future<UserModel?>? readUser(String? userId) async {
+    if (userId?.isEmpty ?? true) {
+      MyConst.debugP("FireStoreDbService.readUser error: userId == isEmtpy");
+      return null;
+    }
+    final readedUser = await _fireStore.doc("users/$userId").get();
+    if (readedUser.data() != null) {
+      final readedUserMap = readedUser.data() as Map<String, dynamic>;
+      UserModel user = UserModel.fromMap(readedUserMap);
+      debugPrint(user.userName);
+      MyConst.debugP("hoş geldin ${user.userName}");
 
-    DocumentSnapshot _okunanUser = await _fireStore.doc("users/${user.userId}").get();
-    // print(_okunanUser.data());
-    final getUser = UserModel.fromMap(_okunanUser.data() as Map<String, dynamic>);
-    // print(getUser.email);
-    scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(" ${getUser.email}\n ${getUser.userId} kaydedildi")));
-
-    return true;
+      return user;
+    }
+    return null;
   }
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_whatsapp_clone/constants/my_const.dart';
 import 'package:flutter_whatsapp_clone/get_it.dart';
 import 'package:flutter_whatsapp_clone/models/user_model.dart';
 import 'package:flutter_whatsapp_clone/repository/user_repository.dart';
@@ -86,17 +87,19 @@ class UserViewModel with ChangeNotifier implements AuthBase {
 
   @override
   Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
-    try {
-      state = ViewState.Busy;
-      if (!emailPassCheck(email: email, pass: password)) return null;
+    state = ViewState.Busy;
+    if (!emailPassCheck(email: email, pass: password)) {
+      state = ViewState.Idle;
+      return null;
+    }
 
-      return _user = await userRepo.signUpEmailPass(email: email, password: password);
-    } on Exception catch (e) {
-      debugPrint("ViewModel signUpWithFacebook Error: $e");
+    try {
+      _user = await userRepo.signUpEmailPass(email: email, password: password);
     } finally {
       state = ViewState.Idle;
     }
-    return null;
+
+    return _user;
   }
 
   @override
@@ -106,12 +109,10 @@ class UserViewModel with ChangeNotifier implements AuthBase {
       if (!emailPassCheck(email: email, pass: password)) return null;
 
       return _user = await userRepo.signInWithEmail(email: email, password: password);
-    } on Exception catch (e) {
-      debugPrint("ViewModel signInWithFacebook Error: $e");
     } finally {
       state = ViewState.Idle;
     }
-    return null;
+  
   }
 
   @override

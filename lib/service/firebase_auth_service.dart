@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-import 'package:flutter_whatsapp_clone/main.dart';
+import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+import '../main.dart';
 import '../models/user_model.dart';
 import 'auth_base.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -13,14 +14,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 class FirebaseAuthService extends AuthBase {
   final FirebaseAuth _fireAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  String? _userEmail;
 
   Future<UserModel?> _userFromFirebase(User? user) async {
     if (user != null) {
-     //DocumentSnapshot snapshot = await _fireStore.doc("user/${user.uid}").get();
-     // final getUser = UserModel.fromJson(snapshot.data().toString());
+      //DocumentSnapshot snapshot = await _fireStore.doc("user/${user.uid}").get();
+      // final getUser = UserModel.fromJson(snapshot.data().toString());
 
-     // scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text("hoş geldin ${getUser.email}")));
-      return UserModel(userId: user.uid, email: user.email);
+      // scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text("hoş geldin ${getUser.email}")));
+      return UserModel(userId: user.uid, email: user.email ?? _userEmail, photoUrl: user.photoURL);
     }
     return null;
   }
@@ -67,17 +69,28 @@ class FirebaseAuthService extends AuthBase {
   @override
   Future<UserModel?> signInWithGoogle() async {
     GoogleSignInAccount? _googleAccount = await GoogleSignIn().signIn();
+    _userEmail = _googleAccount?.email;
+
+    // print("_googleAccount?.email ${_googleAccount?.email}");
+    // print("_googleAccount?.displayName ${_googleAccount?.displayName}");
+    // print("_googleAccount?.id ${_googleAccount?.id}");
+    // print("_googleAccount?.photoUrl ${_googleAccount?.photoUrl}");
+    // print("_googleAccount?.serverAuthCode ${_googleAccount?.serverAuthCode}");
 
     if (_googleAccount != null) {
       GoogleSignInAuthentication _googleAuth = await _googleAccount.authentication;
-      debugPrint(_googleAuth.accessToken);
-      debugPrint("_googleAuth.idToken  ${_googleAuth.idToken}");
+      //debugPrint("_googleAuth.accessToken: ${_googleAuth.accessToken}");
+      //debugPrint("_googleAuth.idToken:  ${_googleAuth.idToken}");
 
       if (_googleAuth.idToken != null && _googleAuth.accessToken != null) {
-        UserCredential _googleCredential =
-            await _fireAuth.signInWithCredential(GoogleAuthProvider.credential(idToken: _googleAuth.idToken, accessToken: _googleAuth.accessToken));
+        UserCredential _googleCredential = await _fireAuth.signInWithCredential(
+          GoogleAuthProvider.credential(
+            idToken: _googleAuth.idToken,
+            accessToken: _googleAuth.accessToken,
+          ),
+        );
+        //_googleCredential.user?.updateEmail("erdgn");
 
-        print(_googleCredential.credential);
         return _userFromFirebase(_googleCredential.user);
       } else {
         return null;
@@ -130,26 +143,14 @@ class FirebaseAuthService extends AuthBase {
 
   @override
   Future<UserModel?> signInWithEmail({required String email, required String password}) async {
-    try {
-      var credential = await _fireAuth.signInWithEmailAndPassword(email: email, password: password);
-
-      return _userFromFirebase(credential.user);
-    } on Exception catch (e) {
-      print("sign in error: $e");
-      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
-      return null;
-    }
+    final credential = await _fireAuth.signInWithEmailAndPassword(email: email, password: password);
+    return _userFromFirebase(credential.user);
   }
 
   @override
   Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
-    try {
-      var credential = await _fireAuth.createUserWithEmailAndPassword(email: email, password: password);
-      return _userFromFirebase(credential.user);
-    } on Exception catch (e) {
-      print("sign up error: $e");
-      scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
-      return null;
-    }
+    final credential = await _fireAuth.createUserWithEmailAndPassword(email: email, password: password);
+
+    return _userFromFirebase(credential.user);
   }
 }

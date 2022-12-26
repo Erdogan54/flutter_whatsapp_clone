@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/app/sign_in/custom_bottom_navi.dart';
-import 'package:flutter_whatsapp_clone/app/sign_in/sign_in_page.dart';
-import 'package:flutter_whatsapp_clone/app/sign_in/tab_items.dart';
-import 'package:provider/provider.dart';
-
-import '../../view_model/user_view_model.dart';
+import 'custom_bottom_navi.dart';
+import 'kullanicilar_page.dart';
+import 'profil_page.dart';
+import 'tab_items.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,31 +14,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TabItem _currentTab = TabItem.Kullaniciler;
 
-  @override
-  Widget build(BuildContext context) {
-    UserViewModel userVm = Provider.of<UserViewModel>(context);
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Ana Sayfa"),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  pressSignOut(context, userVm);
-                },
-                icon: const Icon(Icons.exit_to_app))
-          ],
-        ),
-        body: CustomBottomNavigation(
-          currentTab: _currentTab,
-          onSelectedTab: (secilenTab) => debugPrint("secilen Tab ıtem $secilenTab") ,
-        ));
+  Map<TabItem, Widget> allPages() {
+    return {
+      TabItem.Kullaniciler: const KullanicilarPage(),
+      TabItem.Profil: const ProfilPage(),
+    };
   }
 
-  void pressSignOut(context, userVm) async {
-    final result = await userVm.signOut();
-    if (result) {
-      // Navigator.maybePop(context);
-    }
+  final _navigatorKeys = {
+    TabItem.Kullaniciler: GlobalKey<NavigatorState>(),
+    TabItem.Profil: GlobalKey<NavigatorState>(),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => !(await _navigatorKeys[_currentTab]?.currentState?.maybePop() ?? false),
+      child: MyCustomBottomNavigation(
+        //currentTab: _currentTab,
+        navigatorKeys: _navigatorKeys,
+        onSelectedTab: (secilenTab) {
+          if (_currentTab == secilenTab) {
+            _navigatorKeys[_currentTab]?.currentState?.popUntil((route) => route.isFirst);
+          } else {
+            setState(() {
+              _currentTab = secilenTab;
+            });
+          }
+        },
+        allPages: allPages(),
+      ),
+    );
   }
 }

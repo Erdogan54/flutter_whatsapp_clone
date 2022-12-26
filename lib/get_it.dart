@@ -1,4 +1,4 @@
-import 'package:flutter_whatsapp_clone/service/firestore_db_service.dart';
+import 'service/firestore_db_service.dart';
 
 import 'repository/user_repository.dart';
 import 'service/fake_auth_service.dart';

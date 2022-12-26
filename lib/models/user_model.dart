@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -25,7 +26,7 @@ class UserModel {
     return <String, dynamic>{
       'userId': userId,
       'email': email,
-      'userName': userName,
+      'userName': userName ?? "${email?.substring(0, email?.indexOf("@"))}_${randomNumber()}",
       'photoUrl': photoUrl,
       'createdAt': createdAt?.millisecondsSinceEpoch ?? FieldValue.serverTimestamp(),
       'updateAt': updateAt?.millisecondsSinceEpoch ?? FieldValue.serverTimestamp(),
@@ -90,5 +91,9 @@ class UserModel {
   @override
   int get hashCode {
     return userId.hashCode ^ email.hashCode ^ userName.hashCode ^ photoUrl.hashCode ^ createdAt.hashCode ^ updateAt.hashCode ^ seviye.hashCode;
+  }
+
+  String randomNumber() {
+    return Random().nextInt(999999).toString();
   }
 }
