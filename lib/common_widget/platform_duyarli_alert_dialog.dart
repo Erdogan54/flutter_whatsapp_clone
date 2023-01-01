@@ -10,10 +10,8 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   final String contents;
   final String positiveActionLabel;
   final String? negativeActionLabel;
- 
 
-  PlatformDuyarliAlertDialog(
-      { required this.title, required this.contents, required this.positiveActionLabel, this.negativeActionLabel});
+  PlatformDuyarliAlertDialog({required this.title, required this.contents, required this.positiveActionLabel, this.negativeActionLabel});
 
   Future<bool?> show(BuildContext context) async {
     if (Platform.isIOS) {
@@ -55,7 +53,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
             child: Text(negativeActionLabel!),
             onPressed: () {
               Navigator.pop(context, false);
-              MyConst.showSnackBar("Cupertino Platform Cancel");
+              MyConst.debugP("Cupertino Platform Cancel");
             }));
       }
 
@@ -63,26 +61,26 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
           child: Text(positiveActionLabel),
           onPressed: () {
             Navigator.pop(context, true);
-            MyConst.showSnackBar("Cupertino Platform OK");
+            MyConst.debugP("Cupertino Platform OK");
           }));
     } else {
       if (negativeActionLabel != null) {
         dialogActions.add(TextButton(
             child: Text(negativeActionLabel!),
             onPressed: () {
-              dialogResult:
+              //dialogResult:
               (context) => false;
               Navigator.pop(context, false);
-              MyConst.showSnackBar("Other Platform Cancel");
+              MyConst.debugP("Other Platform Cancel");
             }));
       }
       dialogActions.add(TextButton(
           child: Text(positiveActionLabel),
           onPressed: () {
-            dialogResult:
+            //dialogResult:
             (context) => true;
             Navigator.pop(context, true);
-            MyConst.showSnackBar("Other Platform OK");
+            MyConst.debugP("Other Platform OK");
           }));
     }
     return dialogActions;

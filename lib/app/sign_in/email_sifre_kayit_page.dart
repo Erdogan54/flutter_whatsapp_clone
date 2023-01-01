@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_whatsapp_clone/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+import '../../common_widget/busy_progressbar.dart';
 import '../error_exception.dart';
 import 'home_page.dart';
 import '../../common_widget/social_login_button.dart';
@@ -91,7 +92,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
       alignment: Alignment.center,
       children: [
         _buildPage(context, viewModel),
-        _isBusyBuild(viewModel),
+        BusyProgressBar( isBusy: viewModel.state == ViewState.Busy),
       ],
     );
   }
@@ -154,20 +155,5 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
   void _changeText() {
     _buttonText = _formType == FormType.login ? "Giriş Yap" : "Kayıt Ol";
     _linkText = _formType == FormType.login ? "Hesabınız yok mu? Kayıt Olun" : "Hesabınız var mı? Giriş Yap";
-  }
-
-  _isBusyBuild(UserViewModel viewModel) {
-    return viewModel.state != ViewState.Busy
-        ? const SizedBox()
-        : Stack(
-            children: [
-              Container(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                color: Colors.black.withOpacity(0.6),
-              ),
-              const Center(child: CircularProgressIndicator()),
-            ],
-          );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_whatsapp_clone/constants/my_const.dart';
 
 import 'firebase_options.dart';
 
-firebaseInitialzie() async {
+firebaseInitialize() async {
   print("firebase initialize başladı..${DateTime.now()}");
 
   try {

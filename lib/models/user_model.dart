@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class UserModel {
-  final String userId;
+  String? userId;
   String? email;
   String? userName;
   String? photoUrl;
@@ -28,8 +28,8 @@ class UserModel {
       'email': email,
       'userName': userName ?? "${email?.substring(0, email?.indexOf("@"))}_${randomNumber()}",
       'photoUrl': photoUrl,
-      'createdAt': createdAt?.millisecondsSinceEpoch ?? FieldValue.serverTimestamp(),
-      'updateAt': updateAt?.millisecondsSinceEpoch ?? FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'updateAt': FieldValue.serverTimestamp(),
       'seviye': seviye,
     };
   }

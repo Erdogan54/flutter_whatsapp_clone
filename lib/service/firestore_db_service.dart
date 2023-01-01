@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp_clone/constants/my_const.dart';
@@ -23,18 +25,37 @@ class FireStoreDbService implements DBBase {
   @override
   Future<UserModel?>? readUser(String? userId) async {
     if (userId?.isEmpty ?? true) {
-      MyConst.debugP("FireStoreDbService.readUser error: userId == isEmtpy");
+      MyConst.debugP("FireStoreDbService.readUser error: userId empty");
       return null;
     }
     final readedUser = await _fireStore.doc("users/$userId").get();
     if (readedUser.data() != null) {
       final readedUserMap = readedUser.data() as Map<String, dynamic>;
       UserModel user = UserModel.fromMap(readedUserMap);
-      debugPrint(user.userName);
+
       MyConst.debugP("hoş geldin ${user.userName}");
 
       return user;
     }
     return null;
   }
+
+  @override
+  Future<bool> updateUserName({required String? userId, required String newUserName}) async {
+    final users = await _fireStore.collection("users").where("userName", isEqualTo: newUserName).get();
+    if (users.docs.isNotEmpty) {
+      return false;
+    } else {
+      await _fireStore.collection("users").doc(userId).update({"userName": newUserName});
+      return true;
+    }
+  }
+
+  @override
+  Future<bool> updateProfilePhoto({required String? userId, required String? photoUrl}) async {
+    await _fireStore.collection("users").doc(userId).update({"photoUrl": photoUrl});
+    return true;
+  }
+
+
 }
