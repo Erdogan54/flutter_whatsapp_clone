@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_whatsapp_clone/app/sign_in/home_page.dart';
-import 'package:flutter_whatsapp_clone/common_widget/social_login_button.dart';
+import 'package:flutter_whatsapp_clone/common_widget/platform_duyarli_alert_dialog.dart';
+import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+import '../../common_widget/busy_progressbar.dart';
+import '../error_exception.dart';
+import 'home_page.dart';
+import '../../common_widget/social_login_button.dart';
 
-import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
+import '../../view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/user_model.dart';
@@ -29,19 +35,34 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
   void _formSubmit() async {
     UserViewModel viewModel = Provider.of<UserViewModel>(context, listen: false);
     _formKey.currentState?.save();
-    if (_formType == FormType.login) {
-      print("signInWithEmail");
-      userModel = await viewModel.signInWithEmail(email: _emailController.text, password: _passwordController.text);
-    } else {
-      print("signUpEmailPass");
-      userModel = await viewModel.signUpEmailPass(email: _emailController.text, password: _passwordController.text);
-    }
 
-    // if (userModel != null) {
-    //   Navigator.of(context).push(MaterialPageRoute(
-    //     builder: (context) => const HomePage(),
-    //   ));
-    // } else {}
+    if (_formType == FormType.login) {
+      try {
+        debugPrint("signInWithEmail");
+        userModel = await viewModel.signInWithEmail(email: _emailController.text, password: _passwordController.text);
+      } on FirebaseException catch (e) {
+        PlatformDuyarliAlertDialog(
+          title: "Sign In Error",
+          contents: MyErrorException.show(e.code),
+          positiveActionLabel: "Ok",
+          //negativeActionLabel: "Cancel",
+        ).show(context);
+      }
+    } else {
+      try {
+        debugPrint("signUpEmailPass");
+        userModel = await viewModel.signUpEmailPass(email: _emailController.text, password: _passwordController.text);
+      } on FirebaseException catch (e) {
+        //MyConst.showSnackBar(MyErrorException.show(e.code));
+
+        PlatformDuyarliAlertDialog(
+          title: "Sign Up Error",
+          contents: MyErrorException.show(e.code),
+          positiveActionLabel: "Ok",
+          //negativeActionLabel: "Cancel",
+        ).show(context);
+      }
+    }
   }
 
   void _degistir() {
@@ -71,7 +92,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
       alignment: Alignment.center,
       children: [
         _buildPage(context, viewModel),
-        _isBusyBuild(viewModel),
+        BusyProgressBar( isBusy: viewModel.state == ViewState.Busy),
       ],
     );
   }
@@ -134,20 +155,5 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
   void _changeText() {
     _buttonText = _formType == FormType.login ? "Giriş Yap" : "Kayıt Ol";
     _linkText = _formType == FormType.login ? "Hesabınız yok mu? Kayıt Olun" : "Hesabınız var mı? Giriş Yap";
-  }
-
-  _isBusyBuild(UserViewModel viewModel) {
-    return viewModel.state != ViewState.Busy
-        ? const SizedBox()
-        : Stack(
-            children: [
-              Container(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                color: Colors.black.withOpacity(0.6),
-              ),
-              const Center(child: CircularProgressIndicator()),
-            ],
-          );
   }
 }

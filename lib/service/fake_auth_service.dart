@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp_clone/models/user_model.dart';
 import 'package:flutter_whatsapp_clone/service/auth_base.dart';
 
@@ -20,7 +21,7 @@ class FakeAuthService extends AuthBase {
   }
 
   @override
-  Future<bool> signOut() {
+  Future<bool> signOut( ) {
     return Future.value(true);
   }
 
