@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+import 'constants/my_const.dart';
 
 import 'firebase_options.dart';
 
 firebaseInitialize() async {
-  print("firebase initialize başladı..${DateTime.now()}");
+  debugPrint("firebase initialize başladı..${DateTime.now()}");
 
   try {
     WidgetsFlutterBinding.ensureInitialized();

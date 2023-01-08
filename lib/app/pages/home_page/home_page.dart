@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'custom_bottom_navi.dart';
-import 'kullanicilar_page.dart';
-import 'profil_page.dart';
+import '../kullanicilar_page.dart';
+import '../profil_page.dart';
 import 'tab_items.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,23 +12,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TabItem _currentTab = TabItem.Kullaniciler;
+  TabItem _currentTab = TabItem.kullaniciler;
 
   Map<TabItem, Widget> allPages() {
     return {
-      TabItem.Kullaniciler: const KullanicilarPage(),
-      TabItem.Profil: const ProfilPage(),
+      TabItem.kullaniciler: const KullanicilarPage(),
+      TabItem.profil: const ProfilPage(),
     };
   }
 
   final _navigatorKeys = {
-    TabItem.Kullaniciler: GlobalKey<NavigatorState>(),
-    TabItem.Profil: GlobalKey<NavigatorState>(),
+    TabItem.kullaniciler: GlobalKey<NavigatorState>(),
+    TabItem.profil: GlobalKey<NavigatorState>(),
   };
 
   @override
   Widget build(BuildContext context) {
-
+    debugPrint("home page build");
     return WillPopScope(
       onWillPop: () async => !(await _navigatorKeys[_currentTab]?.currentState?.maybePop() ?? false),
       child: MyCustomBottomNavigation(

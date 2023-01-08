@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
-import 'package:flutter_whatsapp_clone/service/storage_base.dart';
-import 'package:path_provider/path_provider.dart';
+import '../../constants/my_const.dart';
+import '../base/storage_base.dart';
 
 class FirebaseStorageService implements StorageBase {
   final _storageRef = FirebaseStorage.instance.ref();
@@ -14,7 +13,7 @@ class FirebaseStorageService implements StorageBase {
       final uploadTask = await _storageRef.child(userId).child(fileType).putFile(file);
       if (uploadTask.state == TaskState.success) {
         final url = await uploadTask.ref.getDownloadURL();
-        MyConst.showSnackBar("profil foto güncellendi url:$url");
+       // MyConst.showSnackBar("profil foto güncellendi url:$url");
         return url;
       }
 

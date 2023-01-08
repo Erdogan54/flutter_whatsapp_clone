@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/models/user_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../view_model/user_view_model.dart';
-import 'home_page.dart';
+import '../sign_in/sign_in_page.dart';
+import 'home_page/home_page.dart';
 import 'initialize_page.dart';
-import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -28,19 +27,20 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("landing page build");
     final viewModel = Provider.of<UserViewModel>(context, listen: true);
 
-    print("viewModel.user: ${viewModel.user}");
+    //print("viewModel.user: ${viewModel.user}");
 
-    if (viewModel.state == ViewState.Idle) {
+    if (viewModel.state == ViewState.idle) {
       if (viewModel.user == null) {
-        return SignInPage();
+        return const SignInPage();
       } else {
         return const HomePage();
       }
     } else {
       return const InitializePage(
-        locatePage: "landing init",
+        pageName: "landing init",
       );
     }
   }

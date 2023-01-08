@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'email_sifre_kayit_page.dart';
-import '../../common_widget/social_login_button.dart';
-import '../../view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
+import '../../common_widget/social_login_button.dart';
+import '../../view_model/user_view_model.dart';
+import 'email_sifre_kayit_page.dart';
+
 class SignInPage extends StatelessWidget {
+  const SignInPage({super.key});
+
   _pressSignInAnonymous(context, userVm) async {
     await userVm.signInAnonymously();
-    print("misafir girişi istek yapıldı");
+    debugPrint("misafir girişi istek yapıldı");
   }
 
   _pressSignInWithGoole(context, userVm) async {
     await userVm.signInWithGoogle();
-    print("google ile giriş isteği yapıldı");
+    debugPrint("google ile giriş isteği yapıldı");
   }
 
   _pressSignInWithFacebook(context, userVm) async {
     await userVm.signInWithFacebook();
-    print("facebook ile girişi isteği yapıldı");
+    debugPrint("facebook ile girişi isteği yapıldı");
   }
 
   _emailVeSifreKayit(context) {
@@ -30,8 +33,9 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("sign_in page build");
     UserViewModel userVm = Provider.of<UserViewModel>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("WhatsApp Clone"),
@@ -44,18 +48,18 @@ class SignInPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Spacer(flex: 8),
+            const Spacer(flex: 8),
             oturumAcText(),
             //SizedBox(height: 100.h),
-            Spacer(),
+            const Spacer(),
             googleGirisButton(context, userVm),
-            Spacer(),
+            const Spacer(),
             facebookGirisButton(context, userVm),
-            Spacer(),
+            const Spacer(),
             emailVeSifreGirisButton(context),
-            Spacer(),
+            const Spacer(),
             anonymousGirisButton(context, userVm),
-            Spacer(flex: 10),
+            const Spacer(flex: 10),
             //Flexible(child: SizedBox(height: 300.sp))
           ],
         ),

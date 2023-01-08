@@ -1,21 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
-import 'package:provider/provider.dart';
-import '../main.dart';
-import '../models/user_model.dart';
-import '../view_model/user_view_model.dart';
-import 'auth_base.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../constants/my_const.dart';
+import '../../main.dart';
+import '../../models/user_model.dart';
+import '../base/auth_base.dart';
 
 class FirebaseAuthService extends AuthBase {
   final FirebaseAuth _fireAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  //final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   String? _userEmail;
   bool _isSignGoogle = false;
 
@@ -48,7 +45,7 @@ class FirebaseAuthService extends AuthBase {
       var credential = await _fireAuth.signInAnonymously();
       return _userFromFirebase(credential.user);
     } on Exception catch (e) {
-      print("sign in error: $e");
+      debugPrint("sign in error: $e");
       scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
       return null;
     }
@@ -75,17 +72,17 @@ class FirebaseAuthService extends AuthBase {
 
   @override
   Future<UserModel?> signInWithGoogle() async {
-    GoogleSignInAccount? _googleAccount = await GoogleSignIn().signIn();
-    _userEmail = _googleAccount?.email;
-    if (_googleAccount != null) {
-      GoogleSignInAuthentication _googleAuth = await _googleAccount.authentication;
-      if (_googleAuth.idToken != null && _googleAuth.accessToken != null) {
-        UserCredential _googleCredential = await _fireAuth.signInWithCredential(GoogleAuthProvider.credential(
-          idToken: _googleAuth.idToken,
-          accessToken: _googleAuth.accessToken,
+    GoogleSignInAccount? googleAccount = await GoogleSignIn().signIn();
+    _userEmail = googleAccount?.email;
+    if (googleAccount != null) {
+      GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
+      if (googleAuth.idToken != null && googleAuth.accessToken != null) {
+        UserCredential googleCredential = await _fireAuth.signInWithCredential(GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
         ));
         _isSignGoogle = true;
-        return _userFromFirebase(_googleCredential.user);
+        return _userFromFirebase(googleCredential.user);
       } else {
         return null;
       }
@@ -103,7 +100,7 @@ class FirebaseAuthService extends AuthBase {
     switch (res.status) {
       case FacebookLoginStatus.success:
         final FacebookAccessToken? accessToken = res.accessToken;
-        print("acces token: $accessToken");
+        debugPrint("acces token: $accessToken");
 
         if (accessToken != null) {
           final facebookCredential = await _fireAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
@@ -113,10 +110,10 @@ class FirebaseAuthService extends AuthBase {
           debugPrint("hello ${profile?.name}  You Id ${profile?.userId}");
 
           final imageUrl = await fb.getProfileImageUrl(width: 100);
-          print('Your profile image: $imageUrl');
+          debugPrint('Your profile image: $imageUrl');
 
           final email = await fb.getUserEmail();
-          print('And your email is $email');
+          debugPrint('And your email is $email');
 
           return _userFromFirebase(facebookCredential.user);
         }
