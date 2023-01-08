@@ -1,12 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_whatsapp_clone/common_widget/platform_duyarli_alert_dialog.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+import '../../common_widget/platform_duyarli_alert_dialog.dart';
 import '../../common_widget/busy_progressbar.dart';
 import '../error_exception.dart';
-import 'home_page.dart';
+import '../pages/home_page/home_page.dart';
 import '../../common_widget/social_login_button.dart';
 
 import '../../view_model/user_view_model.dart';
@@ -83,6 +81,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("email giriş page build");
     _changeText();
     UserViewModel viewModel = context.watch<UserViewModel>();
     if (viewModel.user != null) return const HomePage();
@@ -92,7 +91,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
       alignment: Alignment.center,
       children: [
         _buildPage(context, viewModel),
-        BusyProgressBar( isBusy: viewModel.state == ViewState.Busy),
+        BusyProgressBar(isBusy: viewModel.state == ViewState.busy),
       ],
     );
   }
@@ -137,7 +136,7 @@ class _EmailSifreKayitLoginState extends State<EmailSifreKayitLogin> {
               ),
             ),
             SocialLoginButton(
-              onPressed: viewModel.state == ViewState.Idle ? _formSubmit : null,
+              onPressed: viewModel.state == ViewState.idle ? _formSubmit : null,
               buttonColor: Theme.of(context).primaryColor,
               buttonText: _buttonText ?? "",
             ),

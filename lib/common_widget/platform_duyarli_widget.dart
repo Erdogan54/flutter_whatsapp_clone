@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 
 abstract class PlatformDuyarliWidget extends StatelessWidget {
+  const PlatformDuyarliWidget({super.key});
+
   Widget buildAndroidWidget(BuildContext context);
   Widget buildIOSWidget(BuildContext context);
 

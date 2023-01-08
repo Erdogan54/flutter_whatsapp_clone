@@ -26,12 +26,25 @@ class UserModel {
     return <String, dynamic>{
       'userId': userId,
       'email': email,
-      'userName': userName ?? "${email?.substring(0, email?.indexOf("@"))}_${randomNumber()}",
+      'userName':
+          userName ?? "${email == null ? "misafir" : email?.substring(0, email?.indexOf("@"))}_${randomNumber()}",
       'photoUrl': photoUrl,
       'createdAt': FieldValue.serverTimestamp(),
       'updateAt': FieldValue.serverTimestamp(),
       'seviye': seviye,
     };
+  }
+
+    factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      userId: map['userId'],
+      email: map['email'],
+      userName: map['userName'],
+      photoUrl: map['photoUrl'],
+      createdAt: map['createdAt'] != null ? (map['createdAt'] as Timestamp).toDate() : null,
+      updateAt: map['updateAt'] != null ? (map['updateAt'] as Timestamp).toDate() : null,
+      seviye: map['seviye'],
+    );
   }
 
   @override
@@ -59,17 +72,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      userId: map['userId'],
-      email: map['email'],
-      userName: map['userName'],
-      photoUrl: map['photoUrl'],
-      createdAt: map['createdAt'] != null ? (map['createdAt'] as Timestamp).toDate() : null,
-      updateAt: map['updateAt'] != null ? (map['updateAt'] as Timestamp).toDate() : null,
-      seviye: map['seviye'],
-    );
-  }
+
 
   String toJson() => json.encode(toMap());
 
@@ -90,7 +93,13 @@ class UserModel {
 
   @override
   int get hashCode {
-    return userId.hashCode ^ email.hashCode ^ userName.hashCode ^ photoUrl.hashCode ^ createdAt.hashCode ^ updateAt.hashCode ^ seviye.hashCode;
+    return userId.hashCode ^
+        email.hashCode ^
+        userName.hashCode ^
+        photoUrl.hashCode ^
+        createdAt.hashCode ^
+        updateAt.hashCode ^
+        seviye.hashCode;
   }
 
   String randomNumber() {

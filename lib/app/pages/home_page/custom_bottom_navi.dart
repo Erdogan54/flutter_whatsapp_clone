@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-
 import 'tab_items.dart';
 
+// ignore: must_be_immutable
 class MyCustomBottomNavigation extends StatelessWidget {
   MyCustomBottomNavigation({
     super.key,
@@ -14,7 +11,7 @@ class MyCustomBottomNavigation extends StatelessWidget {
     required this.navigatorKeys,
   });
 
-  TabItem? currentTab = TabItem.Kullaniciler;
+  TabItem? currentTab = TabItem.kullaniciler;
   final ValueChanged<TabItem> onSelectedTab;
   final Map<TabItem, Widget> allPages;
   final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys;
@@ -24,8 +21,8 @@ class MyCustomBottomNavigation extends StatelessWidget {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
           items: [
-            _navItemBarItem(TabItem.Kullaniciler),
-            _navItemBarItem(TabItem.Profil),
+            _navItemBarItem(TabItem.kullaniciler),
+            _navItemBarItem(TabItem.profil),
           ],
           onTap: (value) {
             currentTab = TabItem.values[value];

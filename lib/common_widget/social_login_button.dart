@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 @immutable
+// ignore: must_be_immutable
 class SocialLoginButton extends StatelessWidget {
   final String buttonText;
   final Color? textColor;

@@ -1,9 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/common_widget/platform_duyarli_widget.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
+
+import '../constants/my_const.dart';
+import 'platform_duyarli_widget.dart';
 
 class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   final String title;
@@ -11,7 +13,8 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   final String positiveActionLabel;
   final String? negativeActionLabel;
 
-  PlatformDuyarliAlertDialog({required this.title, required this.contents, required this.positiveActionLabel, this.negativeActionLabel});
+  const PlatformDuyarliAlertDialog(
+      {super.key, required this.title, required this.contents, required this.positiveActionLabel, this.negativeActionLabel});
 
   Future<bool?> show(BuildContext context) async {
     if (Platform.isIOS) {
