@@ -68,9 +68,14 @@ class UserRepository implements AuthBase {
       return await _fakeAuthService.signInWithGoogle();
     } else {
       final user = await _fireAuthService.signInWithGoogle();
-      final readedUser = await _fireStoreDBService.readUser(user?.userId);
-      await _fireStoreDBService.saveUser(user: readedUser);
 
+      UserModel? readedUser = await _fireStoreDBService.readUser(user?.userId);
+      if (readedUser == null) {
+        await _fireStoreDBService.saveUser(user: user);
+        readedUser = await _fireStoreDBService.readUser(user?.userId);
+      } else {
+        await _fireStoreDBService.saveUser(user: readedUser);
+      }
       return readedUser;
     }
   }
@@ -151,7 +156,7 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return const Stream.empty();
     }
-    return _fireStoreDBService.getMessage(fromUserID, toUserID);
+    return _fireStoreDBService.getMessages(fromUserID, toUserID);
   }
 
   Future<bool> sendMessage(MessageModel willBeSavedMessage) async {
@@ -161,5 +166,10 @@ class UserRepository implements AuthBase {
     return await _fireStoreDBService.saveMessage(willBeSavedMessage);
   }
 
- 
+  Stream<String?> getLastMessage(String? fromUserId, String? toUserId)  {
+    if (appMode == AppMode.DEBUG) {
+      return const Stream.empty();
+    }
+    return  _fireStoreDBService.getLastMessage(fromUserId, toUserId);
+  }
 }

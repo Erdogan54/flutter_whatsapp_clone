@@ -10,4 +10,8 @@ extension ContextExtension on BuildContext {
       scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(label)));
     }
   }
+
+  double get width {
+    return MediaQuery.of(this).size.width;
+  }
 }
