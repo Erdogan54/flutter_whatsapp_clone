@@ -43,13 +43,13 @@ class MessageModel {
     };
   }
 
-  factory MessageModel.fromMap(Map<String, dynamic> map) {
+  factory MessageModel.fromMap(Map<String, dynamic>? map) {
     return MessageModel(
-      fromUserID: map['fromUserID'] != null ? map['fromUserID'] as String : null,
-      toUserID: map['toUserID'] != null ? map['toUserID'] as String : null,
-      message: map['message'] as String,
-      date: map['date'] != null ? (map['date'] as Timestamp).toDate() : null,
-      isFromMe: map['isFromMe'] as bool,
+      fromUserID: map?['fromUserID'] != null ? map!['fromUserID'] as String : null,
+      toUserID: map?['toUserID'] != null ? map!['toUserID'] as String : null,
+      message: map?['message'] as String,
+      date: map?['date'] != null ? (map!['date'] as Timestamp).toDate() : null,
+      isFromMe: map?['isFromMe'] as bool,
     );
   }
 

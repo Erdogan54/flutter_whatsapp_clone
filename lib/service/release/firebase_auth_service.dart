@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
@@ -17,12 +16,30 @@ class FirebaseAuthService extends AuthBase {
   bool _isSignGoogle = false;
 
   Future<UserModel?> _userFromFirebase(User? user) async {
-    if (user != null) {
-      //DocumentSnapshot snapshot = await _fireStore.doc("user/${user.uid}").get();
-      // final getUser = UserModel.fromJson(snapshot.data().toString());
+    print("user.email ${user?.email}");
+    print("user.displayName ${user?.displayName}");
+    print("user.emailVerified ${user?.emailVerified}");
+    print("user.isAnonymous ${user?.isAnonymous}");
+    print("user.metadata ${user?.metadata}");
+    print("user.phoneNumber ${user?.phoneNumber}");
+    print("user.photoURL ${user?.photoURL}");
+    print("user.providerData ${user?.providerData}");
+    print("user.refreshToken ${user?.refreshToken}");
+    print("user.tenantId ${user?.tenantId}");
+    print("user.uid ${user?.uid}");
 
-      // scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text("hoş geldin ${getUser.email}")));
-      return UserModel(userId: user.uid, email: (user.email == null && _isSignGoogle) ? _userEmail : null, photoUrl: user.photoURL);
+    if (user != null) {
+      String? emailCreate() {
+        if (user.email == null) {
+          if (_isSignGoogle) {
+            return _userEmail;
+          }
+          return null;
+        }
+        return user.email;
+      }
+
+      return UserModel(userId: user.uid, email: emailCreate(), photoUrl: user.photoURL);
     }
     return null;
   }
@@ -95,7 +112,8 @@ class FirebaseAuthService extends AuthBase {
   Future<UserModel?> signInWithFacebook() async {
     final fb = FacebookLogin();
 
-    final res = await fb.logIn(permissions: [FacebookPermission.publicProfile, FacebookPermission.email, FacebookPermission.userBirthday]);
+    final res = await fb.logIn(
+        permissions: [FacebookPermission.publicProfile, FacebookPermission.email, FacebookPermission.userBirthday]);
 
     switch (res.status) {
       case FacebookLoginStatus.success:
@@ -103,7 +121,8 @@ class FirebaseAuthService extends AuthBase {
         debugPrint("acces token: $accessToken");
 
         if (accessToken != null) {
-          final facebookCredential = await _fireAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
+          final facebookCredential =
+              await _fireAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
           debugPrint("facebook credential: ${facebookCredential.credential}");
 
           final profile = await fb.getUserProfile();

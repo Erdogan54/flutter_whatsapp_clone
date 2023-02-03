@@ -68,7 +68,7 @@ class FireStoreDbService implements DBBase {
   }
 
   @override
-  Stream<List<MessageModel>> getMessage(String? fromUserID, String? toUserID) {
+  Stream<List<MessageModel>> getMessages(String? fromUserID, String? toUserID) {
     var snapshot = _fireStoreDBService
         .collection("chats")
         .doc("$fromUserID--$toUserID")
@@ -82,6 +82,7 @@ class FireStoreDbService implements DBBase {
 
   @override
   Future<bool> saveMessage(MessageModel willBeSavedMessage) async {
+    saveLastMessage(willBeSavedMessage);
     try {
       final messageID = _fireStoreDBService.collection("chats").doc().id;
       final fromUserDocID = "${willBeSavedMessage.fromUserID}--${willBeSavedMessage.toUserID}";
@@ -111,5 +112,48 @@ class FireStoreDbService implements DBBase {
     }
 
     return false;
+  }
+
+  @override
+  Future<bool> saveLastMessage(MessageModel willBeSavedMessage) async {
+    final fromUserDocID = "${willBeSavedMessage.fromUserID}--${willBeSavedMessage.toUserID}";
+    final toUserDocID = "${willBeSavedMessage.toUserID}--${willBeSavedMessage.fromUserID}";
+
+    final fromUserMessageMap = willBeSavedMessage.toMap();
+
+    await _fireStoreDBService
+        .collection("chats")
+        .doc(fromUserDocID)
+        .collection("last_message")
+        .doc(willBeSavedMessage.date?.toLocal().toString() ?? "last_message")
+        .set(fromUserMessageMap);
+
+    willBeSavedMessage.isFromMe = false;
+    final toUserMessageMap = willBeSavedMessage.toMap();
+
+    await _fireStoreDBService
+        .collection("chats")
+        .doc(toUserDocID)
+        .collection("last_message")
+        .doc(willBeSavedMessage.date?.toLocal().toString() ?? "last_message")
+        .set(toUserMessageMap);
+
+    return true;
+  }
+
+  @override
+  Stream<String?> getLastMessage(String? fromUserId, String? toUserId) {
+    final fromUserDocID = "$fromUserId--$toUserId";
+
+    final snapshot = _fireStoreDBService
+        .collection("chats")
+        .doc(fromUserDocID)
+        .collection("last_message")
+        .doc("last_message")
+        .snapshots();
+
+    final result = snapshot.map((event) => MessageModel.fromMap(event.data()).message);
+
+    return result;
   }
 }

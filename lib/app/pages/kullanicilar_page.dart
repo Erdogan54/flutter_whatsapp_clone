@@ -13,12 +13,13 @@ class KullanicilarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint("kullanıcılar page build");
     final viewUserModelRead = context.read<UserViewModel>();
+    final viewUserModelWatch = context.watch<UserViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Kullanıcılar Sayfası"),
       ),
       body: FutureBuilder<List<UserModel>>(
-        future: viewUserModelRead.getAllUsers(),
+        future: viewUserModelWatch.getAllUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
@@ -26,21 +27,38 @@ class KullanicilarPage extends StatelessWidget {
               final userList = snapshot.data;
               userList?.removeWhere((element) => element.userId == viewUserModelRead.user?.userId);
 
+              StreamBuilder<String?> subtitleLastMessage(int index) {
+                UserModel? fromUser = viewUserModelRead.user;
+                UserModel? toUser = userList?[index];
+                String? subtitle;
+
+                return StreamBuilder<String?>(
+                  stream: viewUserModelWatch.getLastMessage(fromUser?.userId, toUser?.userId),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      subtitle = snapshot.data ?? fromUser?.email;
+                    }
+                    return Text(subtitle ?? "");
+                  },
+                );
+              }
+
               return ListView.builder(
-                  itemCount: userList?.length,
-                  itemBuilder: (context, index) => ListTile(
-                        onTap: () => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            fromUser: viewUserModelRead.user,
-                            toUser: userList?[index],
-                          ),
-                        )),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(userList?[index].photoUrl ?? MyConst.defaultProfilePhotoUrl),
-                        ),
-                        title: Text(userList?[index].userName ?? "null"),
-                        subtitle: Text(userList?[index].email ?? "misafir"),
-                      ));
+                itemCount: userList?.length,
+                itemBuilder: (context, index) => ListTile(
+                  onTap: () => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      fromUser: viewUserModelRead.user,
+                      toUser: userList?[index],
+                    ),
+                  )),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(userList?[index].photoUrl ?? MyConst.defaultProfilePhotoUrl),
+                  ),
+                  title: Text(userList?[index].userName ?? "null"),
+                  subtitle: subtitleLastMessage(index),
+                ),
+              );
             }
             return SingleChildScrollView(
               child: Center(

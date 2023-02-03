@@ -217,5 +217,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     return await _userRepo.sendMessage(willBeSavedMessage);
   }
 
- 
+  Stream<String?> getLastMessage(String? fromUserId, String? toUserId)  {
+    return  _userRepo.getLastMessage(fromUserId, toUserId);
+  }
 }

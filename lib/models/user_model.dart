@@ -32,6 +32,7 @@ class UserModel {
       'createdAt': FieldValue.serverTimestamp(),
       'updateAt': FieldValue.serverTimestamp(),
       'seviye': seviye,
+      
     };
   }
 
