@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../view_model/user_view_model.dart';
-import '../sign_in/sign_in_page.dart';
-import 'home_page/home_page.dart';
+import 'sign_in/sign_in_page.dart';
+import 'home_page/home_page/home_page.dart';
 import 'initialize_page.dart';
 
 class LandingPage extends StatefulWidget {

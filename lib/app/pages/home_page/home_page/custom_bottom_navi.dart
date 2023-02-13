@@ -11,7 +11,7 @@ class MyCustomBottomNavigation extends StatelessWidget {
     required this.navigatorKeys,
   });
 
-  TabItem? currentTab = TabItem.kullaniciler;
+  TabItem? currentTab = TabItem.users;
   final ValueChanged<TabItem> onSelectedTab;
   final Map<TabItem, Widget> allPages;
   final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys;
@@ -21,7 +21,8 @@ class MyCustomBottomNavigation extends StatelessWidget {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
           items: [
-            _navItemBarItem(TabItem.kullaniciler),
+            _navItemBarItem(TabItem.users),
+            _navItemBarItem(TabItem.mychats),
             _navItemBarItem(TabItem.profil),
           ],
           onTap: (value) {

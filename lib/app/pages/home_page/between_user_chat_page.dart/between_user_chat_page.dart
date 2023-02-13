@@ -5,8 +5,9 @@ import 'package:flutter_whatsapp_clone/constants/my_const.dart';
 import 'package:flutter_whatsapp_clone/extensions/context_extension.dart';
 import 'package:flutter_whatsapp_clone/models/message_model.dart';
 import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../models/user_model.dart';
+import '../../../../models/user_model.dart';
 
 class ChatPage extends StatefulWidget {
   final UserModel? fromUser;
@@ -146,6 +147,8 @@ class _ChatPageState extends State<ChatPage> {
     Color goingMessageColor = Theme.of(context).primaryColor;
     if (message == null) return const SizedBox.shrink();
 
+    final timeValue = _timeDisplay(message.date);
+
     final fromMessageBalloon = Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -160,11 +163,11 @@ class _ChatPageState extends State<ChatPage> {
                 margin: const EdgeInsets.all(4),
                 child: Text(
                   message.message,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.end,
                 ),
               ),
             ),
-            const Text("18:24")
+            Text(timeValue)
           ],
         )
       ],
@@ -176,7 +179,8 @@ class _ChatPageState extends State<ChatPage> {
         Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(widget.toUser?.photoUrl ?? ""),
+              backgroundColor: Colors.green,
+              backgroundImage: NetworkImage(widget.toUser?.photoUrl ?? MyConst.defaultProfilePhotoUrl),
             ),
             Flexible(
               child: Container(
@@ -189,7 +193,7 @@ class _ChatPageState extends State<ChatPage> {
                   margin: const EdgeInsets.all(4),
                   child: Text(message.message)),
             ),
-            const Text("14:30")
+            Text(timeValue)
           ],
         ),
       ],
@@ -208,5 +212,14 @@ class _ChatPageState extends State<ChatPage> {
         child: toMessageBalloon,
       );
     }
+  }
+
+  String _timeDisplay(Object? date) {
+    if (date == null) return "";
+    if (date is DateTime) {
+      return DateFormat.Hm().format(date);
+    }
+    date as Timestamp;
+    return DateFormat.Hm().format(date.toDate());
   }
 }
