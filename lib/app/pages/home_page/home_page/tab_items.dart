@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TabItem { kullaniciler, profil }
+enum TabItem { users, mychats, profil }
 
 class TabItemData {
   final String title;
@@ -9,7 +9,8 @@ class TabItemData {
   TabItemData(this.title, this.icon);
 
   static Map<TabItem, TabItemData> allTabs = {
-    TabItem.kullaniciler: TabItemData("Kullanicilar", Icons.supervised_user_circle),
+    TabItem.users: TabItemData("Kullanicilar", Icons.supervised_user_circle),
+    TabItem.mychats: TabItemData("Konusmalarim", Icons.chat),
     TabItem.profil: TabItemData("Profil", Icons.person),
   };
 }

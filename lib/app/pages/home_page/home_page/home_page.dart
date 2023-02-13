@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_whatsapp_clone/app/pages/home_page/my_chats_page/my_chats_page.dart';
 import 'custom_bottom_navi.dart';
-import '../kullanicilar_page.dart';
-import '../profil_page.dart';
+import '../users_page.dart/kullanicilar_page.dart';
+import '../profile_page.dart/profil_page.dart';
 import 'tab_items.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,17 +13,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TabItem _currentTab = TabItem.kullaniciler;
+  TabItem _currentTab = TabItem.users;
 
   Map<TabItem, Widget> allPages() {
     return {
-      TabItem.kullaniciler: const KullanicilarPage(),
+      TabItem.users: const KullanicilarPage(),
+      TabItem.mychats: const MyChatsPage(),
       TabItem.profil: const ProfilPage(),
     };
   }
 
   final _navigatorKeys = {
-    TabItem.kullaniciler: GlobalKey<NavigatorState>(),
+    TabItem.users: GlobalKey<NavigatorState>(),
+    TabItem.mychats: GlobalKey<NavigatorState>(),
     TabItem.profil: GlobalKey<NavigatorState>(),
   };
 
@@ -33,6 +36,7 @@ class _HomePageState extends State<HomePage> {
       onWillPop: () async => !(await _navigatorKeys[_currentTab]?.currentState?.maybePop() ?? false),
       child: MyCustomBottomNavigation(
         //currentTab: _currentTab,
+        allPages: allPages(),
         navigatorKeys: _navigatorKeys,
         onSelectedTab: (secilenTab) {
           if (_currentTab == secilenTab) {
@@ -43,7 +47,7 @@ class _HomePageState extends State<HomePage> {
             });
           }
         },
-        allPages: allPages(),
+        
       ),
     );
   }

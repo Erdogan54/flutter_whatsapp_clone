@@ -1,16 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../common_widget/platform_duyarli_alert_dialog.dart';
-import '../../common_widget/busy_progressbar.dart';
-import '../error_exception.dart';
-import '../pages/home_page/home_page.dart';
-import '../../common_widget/social_login_button.dart';
+import '../../../common_widget/platform_duyarli_alert_dialog.dart';
+import '../../../common_widget/busy_progressbar.dart';
+import '../../error_exception.dart';
+import '../home_page/home_page/home_page.dart';
+import '../../../common_widget/social_login_button.dart';
 
-import '../../view_model/user_view_model.dart';
+import '../../../view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/user_model.dart';
+import '../../../models/user_model.dart';
 
 enum FormType { register, login }
 

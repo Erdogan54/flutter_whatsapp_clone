@@ -22,6 +22,11 @@ class UserModel {
     this.seviye,
   });
 
+  UserModel.IdAndPhoto({
+    this.userId,
+    this.photoUrl,
+  });
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'userId': userId,
@@ -32,11 +37,10 @@ class UserModel {
       'createdAt': FieldValue.serverTimestamp(),
       'updateAt': FieldValue.serverTimestamp(),
       'seviye': seviye,
-      
     };
   }
 
-    factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       userId: map['userId'],
       email: map['email'],
@@ -72,8 +76,6 @@ class UserModel {
       seviye: seviye ?? this.seviye,
     );
   }
-
-
 
   String toJson() => json.encode(toMap());
 

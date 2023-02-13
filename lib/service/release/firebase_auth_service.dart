@@ -10,7 +10,7 @@ import '../../models/user_model.dart';
 import '../base/auth_base.dart';
 
 class FirebaseAuthService extends AuthBase {
-  final FirebaseAuth _fireAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   //final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   String? _userEmail;
   bool _isSignGoogle = false;
@@ -47,7 +47,7 @@ class FirebaseAuthService extends AuthBase {
   @override
   Future<UserModel?> currentUser() async {
     try {
-      User? user = _fireAuth.currentUser;
+      User? user = _firebaseAuth.currentUser;
       return _userFromFirebase(user);
     } on Exception catch (e) {
       debugPrint("currentUser error: $e");
@@ -59,7 +59,7 @@ class FirebaseAuthService extends AuthBase {
   @override
   Future<UserModel?> signInAnonymously() async {
     try {
-      var credential = await _fireAuth.signInAnonymously();
+      var credential = await _firebaseAuth.signInAnonymously();
       return _userFromFirebase(credential.user);
     } on Exception catch (e) {
       debugPrint("sign in error: $e");
@@ -73,7 +73,7 @@ class FirebaseAuthService extends AuthBase {
     try {
       await _signOutGoogle();
       await FacebookLogin().logOut();
-      await _fireAuth.signOut();
+      await _firebaseAuth.signOut();
 
       return true;
     } on Exception catch (e) {
@@ -94,7 +94,7 @@ class FirebaseAuthService extends AuthBase {
     if (googleAccount != null) {
       GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
       if (googleAuth.idToken != null && googleAuth.accessToken != null) {
-        UserCredential googleCredential = await _fireAuth.signInWithCredential(GoogleAuthProvider.credential(
+        UserCredential googleCredential = await _firebaseAuth.signInWithCredential(GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
@@ -122,7 +122,7 @@ class FirebaseAuthService extends AuthBase {
 
         if (accessToken != null) {
           final facebookCredential =
-              await _fireAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
+              await _firebaseAuth.signInWithCredential(FacebookAuthProvider.credential(accessToken.token));
           debugPrint("facebook credential: ${facebookCredential.credential}");
 
           final profile = await fb.getUserProfile();
@@ -153,13 +153,13 @@ class FirebaseAuthService extends AuthBase {
 
   @override
   Future<UserModel?> signInWithEmail({required String email, required String password}) async {
-    final credential = await _fireAuth.signInWithEmailAndPassword(email: email, password: password);
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
     return _userFromFirebase(credential.user);
   }
 
   @override
   Future<UserModel?> signUpEmailPass({required String email, required String password}) async {
-    final credential = await _fireAuth.createUserWithEmailAndPassword(email: email, password: password);
+    final credential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
 
     return _userFromFirebase(credential.user);
   }

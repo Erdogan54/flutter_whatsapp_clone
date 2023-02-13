@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_whatsapp_clone/service/base/auth_base.dart';
 import 'package:flutter_whatsapp_clone/service/release/firebase_auth_service.dart';
 
 import '../constants/my_const.dart';
+import '../models/chat_model.dart';
 import '../service/debug/fake_auth_service.dart';
 import '../service/release/firebase_storege_service.dart';
 import '../service/release/firestore_db_service.dart';
@@ -19,10 +21,12 @@ enum AppMode { DEBUG, RELEASE }
 class UserRepository implements AuthBase {
   final _fakeAuthService = getIt<FakeAuthService>();
   final _fireAuthService = getIt<FirebaseAuthService>();
-  final _fireStoreDBService = getIt<FireStoreDbService>();
+  final fireStoreDBService = getIt<FireStoreDbService>();
   final _firebaseStorageService = getIt<FirebaseStorageService>();
 
   AppMode appMode = AppMode.RELEASE;
+
+  List<UserModel> allUser = [];
 
   @override
   Future<UserModel?>? currentUser() async {
@@ -30,7 +34,7 @@ class UserRepository implements AuthBase {
       return await _fakeAuthService.currentUser();
     } else {
       final user = await _fireAuthService.currentUser();
-      return await _fireStoreDBService.readUser(user?.userId);
+      return await fireStoreDBService.readUser(user?.userId);
     }
   }
 
@@ -44,12 +48,12 @@ class UserRepository implements AuthBase {
         MyConst.debugP("signInAnonymously: user == null");
         return null;
       }
-      final result = await _fireStoreDBService.saveUser(user: user);
+      final result = await fireStoreDBService.saveUser(user: user);
       if (!result) {
         MyConst.debugP("signInAnonymously: resultSaveUser == null");
         return null;
       }
-      return await _fireStoreDBService.readUser(user.userId);
+      return await fireStoreDBService.readUser(user.userId);
     }
   }
 
@@ -69,12 +73,12 @@ class UserRepository implements AuthBase {
     } else {
       final user = await _fireAuthService.signInWithGoogle();
 
-      UserModel? readedUser = await _fireStoreDBService.readUser(user?.userId);
+      UserModel? readedUser = await fireStoreDBService.readUser(user?.userId);
       if (readedUser == null) {
-        await _fireStoreDBService.saveUser(user: user);
-        readedUser = await _fireStoreDBService.readUser(user?.userId);
+        await fireStoreDBService.saveUser(user: user);
+        readedUser = await fireStoreDBService.readUser(user?.userId);
       } else {
-        await _fireStoreDBService.saveUser(user: readedUser);
+        await fireStoreDBService.saveUser(user: readedUser);
       }
       return readedUser;
     }
@@ -92,12 +96,12 @@ class UserRepository implements AuthBase {
         return null;
       }
 
-      final result = await _fireStoreDBService.saveUser(user: user);
+      final result = await fireStoreDBService.saveUser(user: user);
       if (!result) {
         MyConst.debugP("signInWithFacebook: resultSaveUser == null");
         return null;
       }
-      return await _fireStoreDBService.readUser(user.userId);
+      return await fireStoreDBService.readUser(user.userId);
     }
   }
 
@@ -108,8 +112,8 @@ class UserRepository implements AuthBase {
     } else {
       final user = await _fireAuthService.signInWithEmail(email: email, password: password);
 
-      final readedUser = await _fireStoreDBService.readUser(user?.userId);
-      await _fireStoreDBService.saveUser(user: readedUser);
+      final readedUser = await fireStoreDBService.readUser(user?.userId);
+      await fireStoreDBService.saveUser(user: readedUser);
       debugPrint("readUser ${readedUser?.userName ?? "null"}");
       return readedUser;
     }
@@ -121,8 +125,8 @@ class UserRepository implements AuthBase {
       return await _fakeAuthService.signUpEmailPass(email: email, password: password);
     } else {
       final user = await _fireAuthService.signUpEmailPass(email: email, password: password);
-      await _fireStoreDBService.saveUser(user: user);
-      return await _fireStoreDBService.readUser(user?.userId);
+      await fireStoreDBService.saveUser(user: user);
+      return await fireStoreDBService.readUser(user?.userId);
     }
   }
 
@@ -130,7 +134,7 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return false;
     } else {
-      return _fireStoreDBService.updateUserName(userId: userId, newUserName: newUserName);
+      return fireStoreDBService.updateUserName(userId: userId, newUserName: newUserName);
     }
   }
 
@@ -139,7 +143,7 @@ class UserRepository implements AuthBase {
       return "dosya_indirme_linkli";
     } else {
       final profilePhotoUrl = await _firebaseStorageService.uploadFile(userId: userId, fileType: fileType, file: file);
-      _fireStoreDBService.updateProfilePhoto(userId: userId, photoUrl: profilePhotoUrl);
+      fireStoreDBService.updateProfilePhoto(userId: userId, photoUrl: profilePhotoUrl);
 
       return profilePhotoUrl;
     }
@@ -149,27 +153,49 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return [UserModel(userId: null, email: null)];
     }
-    return await _fireStoreDBService.getAllUsers();
+    return allUser = await fireStoreDBService.getAllUsers();
   }
 
   Stream<List<MessageModel>> getMessages(String? fromUserID, String? toUserID) {
     if (appMode == AppMode.DEBUG) {
       return const Stream.empty();
     }
-    return _fireStoreDBService.getMessages(fromUserID, toUserID);
+    return fireStoreDBService.getMessages(fromUserID, toUserID);
   }
 
   Future<bool> sendMessage(MessageModel willBeSavedMessage) async {
     if (appMode == AppMode.DEBUG) {
       return true;
     }
-    return await _fireStoreDBService.saveMessage(willBeSavedMessage);
+    return await fireStoreDBService.saveMessage(willBeSavedMessage);
   }
 
-  Stream<String?> getLastMessage(String? fromUserId, String? toUserId)  {
+  Stream<List<ChatModel>> getAllConversations({String? fromUserId}) {
     if (appMode == AppMode.DEBUG) {
       return const Stream.empty();
     }
-    return  _fireStoreDBService.getLastMessage(fromUserId, toUserId);
+
+    return fireStoreDBService.getAllConversations(fromUserId);
+
+    // List<ChatModel> newList = [];
+    // var chatList = _fireStoreDBService.getAllConversations(fromUserId);
+
+    // chatList.listen((e1) {
+    //   e1.forEach((e2) {
+    //     allUser.forEach((e) {
+    //       if (e.userId == e2.toUserID) {
+    //         e2.toUserName = e.userName;
+    //         e2.toUserProfileURL = e.photoUrl;
+
+    //         newList.add(e2);
+    //       }
+    //     });
+    //   });
+    // });
+
+    // StreamController<List<ChatModel>> streamController = StreamController();
+    // streamController.add(newList);
+
+    // return streamController.stream;
   }
 }
