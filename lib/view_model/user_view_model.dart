@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_whatsapp_clone/app/pages/home_page/profile_page.dart/profil_page.dart';
-import 'package:flutter_whatsapp_clone/constants/my_const.dart';
-import 'package:flutter_whatsapp_clone/get_it.dart';
-import 'package:flutter_whatsapp_clone/models/message_model.dart';
-import 'package:flutter_whatsapp_clone/models/user_model.dart';
-import 'package:flutter_whatsapp_clone/repository/user_repository.dart';
-import 'package:flutter_whatsapp_clone/service/base/auth_base.dart';
+import '../app/pages/home_page/profile_page.dart/profil_page.dart';
+import '../constants/my_const.dart';
+import '../get_it.dart';
+import '../models/message_model.dart';
+import '../models/user_model.dart';
+import '../repository/user_repository.dart';
+import '../service/base/auth_base.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -19,7 +19,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   UserViewModel() {
     currentUser();
   }
-  final userRepo = getIt<UserRepository>();
+  final _userRepo = getIt<UserRepository>();
   ViewState _state = ViewState.idle;
   bool _isUpdateUserInfo = false;
   UserModel? user;
@@ -49,22 +49,9 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   }
 
   Future<DateTime?> getCurrentServerTime(String? fromUserId) async {
-    currentServerTime = await userRepo.fireStoreDBService.getServerDateTime(fromUserId);
+    currentServerTime = await _userRepo.getServerDateTime(fromUserId);
     print("update servertime: $currentServerTime");
     return currentServerTime;
-  }
-
-  String? getTimeAgo(Timestamp? messageCreatedTime) {
-    print("messageCreatedTime: ${messageCreatedTime?.toDate()}");
-    print("currentServerTime: ${currentServerTime}");
-
-    var duration = currentServerTime?.difference(messageCreatedTime?.toDate() ?? DateTime.now());
-
-    timeago.setLocaleMessages("tr", timeago.TrMessages());
-    var differentTime =
-        timeago.format((currentServerTime ?? DateTime.now()).subtract(duration ?? const Duration()), locale: "tr");
-
-    return differentTime;
   }
 
   bool emailPassCheck({required String email, required String pass}) {
@@ -90,7 +77,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?>? currentUser() async {
     try {
       state = ViewState.busy;
-      return user = await userRepo.currentUser();
+      return user = await _userRepo.currentUser();
     } on Exception catch (e) {
       debugPrint("ViewModel currentUser Error: $e");
     } finally {
@@ -103,7 +90,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?> signInWithGoogle() async {
     try {
       state = ViewState.busy;
-      return user = await userRepo.signInWithGoogle();
+      return user = await _userRepo.signInWithGoogle();
     } on Exception catch (e) {
       debugPrint("ViewModel signInWithGoogle Error: $e");
     } finally {
@@ -116,7 +103,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?> signInWithFacebook() async {
     try {
       state = ViewState.busy;
-      return user = await userRepo.signInWithFacebook();
+      return user = await _userRepo.signInWithFacebook();
     } on Exception catch (e) {
       debugPrint("ViewModel signInWithFacebook Error: $e");
     } finally {
@@ -134,7 +121,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     }
 
     try {
-      user = await userRepo.signUpEmailPass(email: email, password: password);
+      user = await _userRepo.signUpEmailPass(email: email, password: password);
     } finally {
       state = ViewState.idle;
     }
@@ -148,7 +135,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
       state = ViewState.busy;
       if (!emailPassCheck(email: email, pass: password)) return null;
 
-      return user = await userRepo.signInWithEmail(email: email, password: password);
+      return user = await _userRepo.signInWithEmail(email: email, password: password);
     } finally {
       state = ViewState.idle;
     }
@@ -158,7 +145,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<UserModel?> signInAnonymously() async {
     try {
       state = ViewState.busy;
-      return user = await userRepo.signInAnonymously();
+      return user = await _userRepo.signInAnonymously();
     } on Exception catch (e) {
       debugPrint("ViewModel signInAnonymously Error: $e");
     } finally {
@@ -171,7 +158,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
   Future<bool> signOut() async {
     try {
       state = ViewState.busy;
-      bool result = await userRepo.signOut();
+      bool result = await _userRepo.signOut();
       if (result) {
         user = null;
         return result;
@@ -189,7 +176,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     bool result = false;
 
     if (user?.userName != newUserName) {
-      result = await userRepo.updateUserName(userId: userId, newUserName: newUserName);
+      result = await _userRepo.updateUserName(userId: userId, newUserName: newUserName);
 
       if (result == true) {
         user?.userName = newUserName;
@@ -208,7 +195,7 @@ class UserViewModel with ChangeNotifier implements AuthBase {
 
   Future<bool> kameradanFotoCek() async {
     resultPicker = await picker.pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
-    getAllUsers();
+    //getAllUsers();
     updateProfilPhoto();
     notifyListeners();
 
@@ -217,14 +204,14 @@ class UserViewModel with ChangeNotifier implements AuthBase {
 
   void galeridenFotoSec() async {
     resultPicker = await picker.pickImage(source: ImageSource.gallery);
-    getAllUsers();
+
     updateProfilPhoto();
     notifyListeners();
   }
 
   Future<String?> updateProfilPhoto() async {
     if (resultPicker != null) {
-      final url = await userRepo.updateProfilePhoto(
+      final url = await _userRepo.updateProfilePhoto(
           userId: user?.userId, file: File(resultPicker!.path), fileType: "profile_photo.png");
       if (url != null) {
         MyConst.showSnackBar("Profil fotoğrafınız güncellendi");
@@ -234,28 +221,15 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     return null;
   }
 
-  Future<List<UserModel>> getAllUsers() async {
-    final users = await userRepo.getAllUsers();
-    users.removeWhere((element) => element.userId == user?.userId);
-
-    return users;
-  }
-
   Stream<List<MessageModel>> getMessages(String? fromUserID, String? toUserID) {
-    return userRepo.getMessages(fromUserID, toUserID);
-  }
-
-  Future<bool> sendMessage(MessageModel willBeSavedMessage) async {
-    return await userRepo.sendMessage(willBeSavedMessage);
+    return _userRepo.getMessages(fromUserID, toUserID);
   }
 
   Stream<List<ChatModel>> getAllConversations({String? fromUserId}) {
-    return userRepo.getAllConversations(fromUserId: fromUserId);
+    return _userRepo.getAllConversations(fromUserId: fromUserId);
   }
 
-  List<ChatModel> chatModelDataUpdate(List<ChatModel> chatModels) {
-    final allUsers = userRepo.allUser;
-
+  List<ChatModel> chatModelDataUpdate(List<ChatModel> chatModels, List<UserModel> allUsers) {
     for (var allUserElement in allUsers) {
       for (var chatModelElement in chatModels) {
         if (allUserElement.userId == chatModelElement.toUserID) {
@@ -267,5 +241,22 @@ class UserViewModel with ChangeNotifier implements AuthBase {
     }
 
     return chatModels;
+  }
+
+  String? getTimeAgo(Timestamp? messageCreatedTime) {
+    // print("messageCreatedTime: ${messageCreatedTime?.toDate()}");
+    // print("currentServerTime: ${currentServerTime}");
+
+    var duration = currentServerTime?.difference(messageCreatedTime?.toDate() ?? DateTime.now());
+
+    timeago.setLocaleMessages("tr", timeago.TrMessages());
+    var differentTime =
+        timeago.format((currentServerTime ?? DateTime.now()).subtract(duration ?? const Duration()), locale: "tr");
+
+    return differentTime;
+  }
+
+  Future<List<UserModel>> getUsersWithPagination(UserModel? lastUser, int i) async {
+    return await _userRepo.getUsersWithPagination(lastUser, i);
   }
 }

@@ -1,9 +1,21 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/app/pages/home_page/my_chats_page/my_chats_page.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_whatsapp_clone/app/connectivity_check.dart';
+import 'package:flutter_whatsapp_clone/service/release/firebase_notifications.dart';
+import 'package:flutter_whatsapp_clone/view_model/all_user_view_model.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import '../../../../constants/my_const.dart';
+import '../chatting_users_page/chatting_users_page.dart';
 import 'custom_bottom_navi.dart';
-import '../users_page.dart/kullanicilar_page.dart';
+import '../users_page.dart/users_page.dart';
 import '../profile_page.dart/profil_page.dart';
 import 'tab_items.dart';
+import 'dart:developer' as developer;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,8 +29,8 @@ class _HomePageState extends State<HomePage> {
 
   Map<TabItem, Widget> allPages() {
     return {
-      TabItem.users: const KullanicilarPage(),
-      TabItem.mychats: const MyChatsPage(),
+      TabItem.users: const UsersPage(),
+      TabItem.mychats: const ChattingUserListPage(),
       TabItem.profil: const ProfilPage(),
     };
   }
@@ -47,7 +59,6 @@ class _HomePageState extends State<HomePage> {
             });
           }
         },
-        
       ),
     );
   }

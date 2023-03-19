@@ -12,6 +12,7 @@ class UserModel {
   DateTime? createdAt;
   DateTime? updateAt;
   int? seviye;
+
   UserModel({
     required this.userId,
     required this.email,
@@ -21,6 +22,7 @@ class UserModel {
     this.updateAt,
     this.seviye,
   });
+
 
   UserModel.IdAndPhoto({
     this.userId,

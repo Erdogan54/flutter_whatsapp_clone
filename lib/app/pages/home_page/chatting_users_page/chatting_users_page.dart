@@ -2,29 +2,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_whatsapp_clone/app/pages/initialize_page.dart';
-import 'package:flutter_whatsapp_clone/models/chat_model.dart';
-import 'package:flutter_whatsapp_clone/models/user_model.dart';
+import 'package:flutter_whatsapp_clone/view_model/all_user_view_model.dart';
+import 'package:flutter_whatsapp_clone/view_model/chat_view_model.dart';
+import '../../initialize_page/initialize_page.dart';
+import '../../../../models/chat_model.dart';
+import '../../../../models/user_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../constants/my_const.dart';
 import '../../../../view_model/user_view_model.dart';
-import '../between_user_chat_page.dart/between_user_chat_page.dart';
+import '../chat_page/chat_page.dart';
 
-class MyChatsPage extends StatefulWidget {
-  const MyChatsPage({super.key});
+class ChattingUserListPage extends StatefulWidget {
+  const ChattingUserListPage({super.key});
 
   @override
-  State<MyChatsPage> createState() => _MyChatsPageState();
+  State<ChattingUserListPage> createState() => _ChattingUserListPageState();
 }
 
-class _MyChatsPageState extends State<MyChatsPage> {
+class _ChattingUserListPageState extends State<ChattingUserListPage> {
   late UserViewModel _userViewModelRead;
+  late AllUserViewModel _allUserViewModelRead;
   late UserViewModel _userViewModelWatch;
 
   @override
   void initState() {
     _userViewModelRead = context.read<UserViewModel>();
+    _allUserViewModelRead = context.read<AllUserViewModel>();
 
     super.initState();
   }
@@ -79,22 +83,24 @@ class _MyChatsPageState extends State<MyChatsPage> {
             child: ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                List<ChatModel> newModelList = _userViewModelRead.chatModelDataUpdate(snapshot.data!);
+                List<ChatModel> newModelList =
+                    _userViewModelRead.chatModelDataUpdate(snapshot.data!, _allUserViewModelRead.allUser ?? []);
                 ChatModel chatModel = newModelList[index];
 
                 return ListTile(
-                  onTap: () => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                    builder: (context) => ChatPage(
-                      fromUser: _userViewModelRead.user,
-                      toUser: UserModel.IdAndPhoto(userId: chatModel.toUserID, photoUrl: chatModel.toUserProfileURL),
-                    ),
-                  )),
+                  onTap: () {
+                    _navigateToChatPage(context, chatModel);
+                  },
                   leading: CircleAvatar(
                     backgroundColor: Colors.white,
                     backgroundImage: NetworkImage(chatModel.toUserProfileURL ?? MyConst.defaultProfilePhotoUrl),
                   ),
                   title: Text(chatModel.toUserName ?? "null"),
-                  subtitle: Text(_userViewModelWatch.currentServerTime != null ? (chatModel.timeAgo ?? "") : ""),
+                  subtitle: Row(
+                    children: [
+                      Text(chatModel.timeAgo ?? "null"),
+                    ],
+                  ),
                 );
               },
             ),
@@ -104,22 +110,17 @@ class _MyChatsPageState extends State<MyChatsPage> {
     );
   }
 
-  // ChatModel? _findUser(ChatModel? toUser) {
-  //   final allUser = _viewModelWatch.userRepo.allUser;
-
-  //   for (var e in allUser) {
-  //     if (e.userId == toUser?.toUserID) {
-  //       toUser?.toUserName = e.userName;
-  //       toUser?.toUserProfileURL = e.photoUrl;
-  //       toUser?.timeAgo = _userViewModelRead.getTimeAgo(toUser.createdDate);
-  //     }
-  //   }
-  //   return toUser;
-  // }
+  void _navigateToChatPage(BuildContext context, ChatModel chatModel) {
+    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+      builder: (context) => ChatPage(
+          fromUser: _userViewModelRead.user,
+          toUser: UserModel.IdAndPhoto(userId: chatModel.toUserID, photoUrl: chatModel.toUserProfileURL)),
+    ));
+  }
 
   _onRefresh() async {
     await _userViewModelRead.getCurrentServerTime(_userViewModelRead.user?.userId);
-    await _userViewModelRead.getAllUsers();
+    //await _userViewModelRead.getAllUsers();
     setState(() {});
     print("refresh yapıldı");
   }

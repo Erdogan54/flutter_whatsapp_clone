@@ -8,13 +8,13 @@ class MessageModel {
   String? toUserID;
   final String message;
   DateTime? date;
-  bool isFromMe;
+  bool? isFromMe;
   MessageModel({
     required this.fromUserID,
     required this.toUserID,
     required this.message,
     this.date,
-    required this.isFromMe,
+    this.isFromMe,
   });
 
   MessageModel copyWith({
@@ -45,11 +45,11 @@ class MessageModel {
 
   factory MessageModel.fromMap(Map<String, dynamic>? map) {
     return MessageModel(
-      fromUserID: map?['fromUserID'] != null ? map!['fromUserID'] as String : null,
-      toUserID: map?['toUserID'] != null ? map!['toUserID'] as String : null,
-      message: map?['message'] as String,
-      date: map?['date'] != null ? (map!['date'] as Timestamp).toDate() : null,
-      isFromMe: map?['isFromMe'] as bool,
+      fromUserID: map?['fromUserID'],
+      toUserID: map?['toUserID'],
+      message: map?['message'],
+      date: map?['date'] != null ? (map?['date'] as Timestamp).toDate() : null ,
+      isFromMe: map?['isFromMe'],
     );
   }
 
