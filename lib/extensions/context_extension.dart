@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 
 extension ContextExtension on BuildContext {
-  debugP(String label) {
+  void debugP(String label) {
     if (kDebugMode) {
       debugPrint(label);
       scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(label)));
@@ -13,5 +13,9 @@ extension ContextExtension on BuildContext {
 
   double get width {
     return MediaQuery.of(this).size.width;
+  }
+
+  double get height {
+    return MediaQuery.of(this).size.height;
   }
 }

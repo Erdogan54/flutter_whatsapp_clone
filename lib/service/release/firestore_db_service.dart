@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_whatsapp_clone/models/chat_model.dart';
-import 'package:flutter_whatsapp_clone/models/message_model.dart';
+import '../../models/chat_model.dart';
+import '../../models/message_model.dart';
 
 import '../../constants/my_const.dart';
 import '../../models/user_model.dart';
@@ -66,14 +66,18 @@ class FireStoreDbService implements DBBase {
         .doc("$fromUserID--$toUserID")
         .collection("messages")
         .orderBy("date", descending: true)
+        .limit(1)
         .snapshots();
 
-    return snapshot
-        .map((messageList) => messageList.docs.map((message) => MessageModel.fromMap(message.data())).toList());
+    final result =
+        snapshot.map((messageList) => messageList.docs.map((message) => MessageModel.fromMap(message.data())).toList());
+
+    print(result);
+    return result;
   }
 
   @override
-  Future<bool> saveMessage(MessageModel willBeSavedMessage) async {
+  Future<bool> sendAndSaveMessage(MessageModel willBeSavedMessage) async {
     try {
       final messageID = _firebaseDBService.collection("chats").doc().id;
       final fromUserDocID = "${willBeSavedMessage.fromUserID}--${willBeSavedMessage.toUserID}";
@@ -81,7 +85,17 @@ class FireStoreDbService implements DBBase {
 
       final fromUserMessageMap = willBeSavedMessage.toMap();
 
-      ///////// message sending /////
+      ///////// fromUser Database /////
+      await _firebaseDBService.collection("chats").doc(fromUserDocID).set(
+        {
+          "fromUserID": willBeSavedMessage.fromUserID,
+          "toUserID": willBeSavedMessage.toUserID,
+          "lastMessage": willBeSavedMessage.message,
+          "isShow": false,
+          "createdDate": fromUserMessageMap["date"],
+          "displayedDate": null,
+        },
+      );
 
       await _firebaseDBService
           .collection("chats")
@@ -90,25 +104,9 @@ class FireStoreDbService implements DBBase {
           .doc(messageID)
           .set(fromUserMessageMap);
 
-      await _firebaseDBService.collection("chats").doc(fromUserDocID).set(
-        {
-          "fromUserID": willBeSavedMessage.fromUserID,
-          "toUserID": willBeSavedMessage.toUserID,
-          "lastMessage": willBeSavedMessage.message,
-          "isShow": false,
-          "createdDate": FieldValue.serverTimestamp(),
-          "displayedDate": null
-        },
-      );
-      ///////// message receiver /////
+      ///////// toUser Database /////
       willBeSavedMessage.isFromMe = false;
       final toUserMessageMap = willBeSavedMessage.toMap();
-      await _firebaseDBService
-          .collection("chats")
-          .doc(toUserDocID)
-          .collection("messages")
-          .doc(messageID)
-          .set(toUserMessageMap);
 
       await _firebaseDBService.collection("chats").doc(toUserDocID).set(
         {
@@ -116,10 +114,17 @@ class FireStoreDbService implements DBBase {
           "toUserID": willBeSavedMessage.fromUserID,
           "lastMessage": willBeSavedMessage.message,
           "isShow": false,
-          "createdDate": FieldValue.serverTimestamp(),
+          "createdDate": toUserMessageMap["date"],
           "displayedDate": null
         },
       );
+
+      await _firebaseDBService
+          .collection("chats")
+          .doc(toUserDocID)
+          .collection("messages")
+          .doc(messageID)
+          .set(toUserMessageMap);
 
       return true;
     } on Exception catch (e) {
@@ -136,22 +141,14 @@ class FireStoreDbService implements DBBase {
         .where("fromUserID", isEqualTo: fromUserId)
         .orderBy("createdDate", descending: true)
         .snapshots();
-    var result = querySnapshot.map((userList) => userList.docs.map((chat) => ChatModel.fromMap(chat.data())).toList());
+    var result = querySnapshot.map((userList) => userList.docs.map((chat) {
+          print("createdDate: ${chat.data()["createdDate"]}");
+          print("toUserID: ${chat.data()["toUserID"]}");
+          print("fromUserID: ${chat.data()["fromUserID"]}");
+          return ChatModel.fromMap(chat.data());
+        }).toList());
 
     return result;
-  }
-
-  @override
-  Future<List<UserModel>> getAllUsers() async {
-    List<UserModel> userList = [];
-    final querySnapshot = await _firebaseDBService.collection("users/").get();
-    userList = querySnapshot.docs.map((e) => UserModel.fromMap(e.data())).toList();
-    // for (var data in querySnapshot.docs) {
-    //   final user = UserModel.fromMap(data.data());
-    //   userList.add(user);
-    // }
-
-    return userList;
   }
 
   @override
@@ -159,6 +156,99 @@ class FireStoreDbService implements DBBase {
     await _firebaseDBService.collection("server").doc(fromUserId).set({"time": FieldValue.serverTimestamp()});
     final readedMap = await _firebaseDBService.collection("server").doc(fromUserId).get();
     Timestamp? readedDateTime = readedMap.data()?["time"];
+    print("result server time ${readedDateTime}");
     return readedDateTime?.toDate();
+  }
+
+  @override
+  Future<List<UserModel>> getUsersWithPagination(UserModel? lastUser, int userCount) async {
+    QuerySnapshot querySnapshot;
+
+    List<UserModel> allUsers = [];
+    if (lastUser == null) {
+      print("kullanıcılar ilk olarak getiriliyor - database service");
+      querySnapshot = await FirebaseFirestore.instance.collection("users").orderBy("userName").limit(userCount).get();
+    } else {
+      print("sonraki kullanıcılar getirirliyor - database service");
+      querySnapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .orderBy("userName")
+          .startAfter([lastUser.userName])
+          .limit(userCount)
+          .get();
+      //await Future.delayed(const Duration(seconds: 1));
+    }
+
+    for (var snap in querySnapshot.docs) {
+      UserModel user = UserModel.fromMap(snap.data() as Map<String, dynamic>);
+      allUsers.add(user);
+     // print("getirilen userName: ${user.userName} - database service");
+    }
+
+    return allUsers;
+  }
+
+  Future<List<MessageModel>> getMessagesWithPagination(
+      String? fromUserId, String? toUserId, int messageCount, MessageModel? lastMessage) async {
+    QuerySnapshot querySnapshot;
+
+    List<MessageModel> allMessages = [];
+    if (lastMessage == null) {
+      print("mesajlar ilk olarak getiriliyor - database service");
+      querySnapshot = await FirebaseFirestore.instance
+          .collection("chats")
+          .doc("$fromUserId--$toUserId")
+          .collection("messages")
+          .orderBy("date", descending: true)
+          //.startAfter([lastMessage])
+          .limit(messageCount)
+          .get();
+    } else {
+      print("önceki mesajlar getirirliyor - database service");
+      querySnapshot = await FirebaseFirestore.instance
+          .collection("chats")
+          .doc("$fromUserId--$toUserId")
+          .collection("messages")
+          .orderBy("date", descending: true)
+          .startAfter([lastMessage.date])
+          .limit(messageCount)
+          .get();
+      //await Future.delayed(const Duration(seconds: 1));
+    }
+
+    for (var snap in querySnapshot.docs) {
+      MessageModel message = MessageModel.fromMap(snap.data() as Map<String, dynamic>);
+      allMessages.add(message);
+      // print("getirilen message: $message - database service");
+    }
+
+    //print(allMessages);
+
+    return allMessages;
+  }
+
+  Future<List<MessageModel>> getLastMessages(String? fromUserId, String? toUserId, MessageModel? lastMessage) async {
+    QuerySnapshot querySnapshot;
+
+    List<MessageModel> allMessages = [];
+
+    print("son mesajlar getirirliyor - database service");
+    querySnapshot = await FirebaseFirestore.instance
+        .collection("chats")
+        .doc("$fromUserId--$toUserId")
+        .collection("messages")
+        .orderBy("date", descending: true)
+        .endBefore([lastMessage?.date]).get();
+    //await Future.delayed(const Duration(seconds: 1));
+
+    for (var snap in querySnapshot.docs) {
+      MessageModel message = MessageModel.fromMap(snap.data() as Map<String, dynamic>);
+      allMessages.add(message);
+      // print("getirilen message: $message - database service");
+    }
+
+    //print(allMessages);
+
+    return allMessages;
   }
 }

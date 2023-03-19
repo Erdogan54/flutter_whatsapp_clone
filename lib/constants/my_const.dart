@@ -12,10 +12,13 @@ class MyConst {
     }
   }
 
-  static showSnackBar(String label) {
+  static showSnackBar(String label, [int? seconds]) {
     debugPrint(label);
-    //scaffoldKey.currentState?.hideCurrentSnackBar();
-    scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(label)));
+    scaffoldKey.currentState?.hideCurrentSnackBar();
+    scaffoldKey.currentState?.showSnackBar(SnackBar(
+      content: Text(label),
+      duration: Duration(seconds: seconds ?? 4000),
+    ));
   }
 
   static get defaultProfilePhotoUrl =>
