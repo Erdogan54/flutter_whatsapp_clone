@@ -11,7 +11,7 @@ import '../base/db_base.dart';
 import 'package:async/async.dart';
 
 class FireStoreDbService implements DBBase {
-  final FirebaseFirestore _firebaseDBService = FirebaseFirestore.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   Future<bool> saveUser({required UserModel? user}) async {
@@ -19,7 +19,7 @@ class FireStoreDbService implements DBBase {
       MyConst.debugP("FireStoreDbService.saveUser error: user == null");
       return false;
     } else {
-      await _firebaseDBService.collection("users").doc(user.userId).set(user.toMap());
+      await _firebaseFirestore.collection("users").doc(user.userId).set(user.toMap());
       return true;
     }
   }
@@ -30,7 +30,7 @@ class FireStoreDbService implements DBBase {
       MyConst.debugP("FireStoreDbService.readUser error: userId empty");
       return null;
     }
-    final readedUser = await _firebaseDBService.doc("users/$userId").get();
+    final readedUser = await _firebaseFirestore.doc("users/$userId").get();
     if (readedUser.data() != null) {
       final readedUserMap = readedUser.data() as Map<String, dynamic>;
       UserModel user = UserModel.fromMap(readedUserMap);
@@ -44,24 +44,24 @@ class FireStoreDbService implements DBBase {
 
   @override
   Future<bool> updateUserName({required String? userId, required String newUserName}) async {
-    final users = await _firebaseDBService.collection("users").where("userName", isEqualTo: newUserName).get();
+    final users = await _firebaseFirestore.collection("users").where("userName", isEqualTo: newUserName).get();
     if (users.docs.isNotEmpty) {
       return false;
     } else {
-      await _firebaseDBService.collection("users").doc(userId).update({"userName": newUserName});
+      await _firebaseFirestore.collection("users").doc(userId).update({"userName": newUserName});
       return true;
     }
   }
 
   @override
   Future<bool> updateProfilePhoto({required String? userId, required String? photoUrl}) async {
-    await _firebaseDBService.collection("users").doc(userId).update({"photoUrl": photoUrl});
+    await _firebaseFirestore.collection("users").doc(userId).update({"photoUrl": photoUrl});
     return true;
   }
 
   @override
   Stream<List<MessageModel>> getMessages(String? fromUserID, String? toUserID) {
-    var snapshot = _firebaseDBService
+    var snapshot = _firebaseFirestore
         .collection("chats")
         .doc("$fromUserID--$toUserID")
         .collection("messages")
@@ -79,14 +79,14 @@ class FireStoreDbService implements DBBase {
   @override
   Future<bool> sendAndSaveMessage(MessageModel willBeSavedMessage) async {
     try {
-      final messageID = _firebaseDBService.collection("chats").doc().id;
+      final messageID = _firebaseFirestore.collection("chats").doc().id;
       final fromUserDocID = "${willBeSavedMessage.fromUserID}--${willBeSavedMessage.toUserID}";
       final toUserDocID = "${willBeSavedMessage.toUserID}--${willBeSavedMessage.fromUserID}";
 
       final fromUserMessageMap = willBeSavedMessage.toMap();
 
       ///////// fromUser Database /////
-      await _firebaseDBService.collection("chats").doc(fromUserDocID).set(
+      await _firebaseFirestore.collection("chats").doc(fromUserDocID).set(
         {
           "fromUserID": willBeSavedMessage.fromUserID,
           "toUserID": willBeSavedMessage.toUserID,
@@ -97,7 +97,7 @@ class FireStoreDbService implements DBBase {
         },
       );
 
-      await _firebaseDBService
+      await _firebaseFirestore
           .collection("chats")
           .doc(fromUserDocID)
           .collection("messages")
@@ -108,7 +108,7 @@ class FireStoreDbService implements DBBase {
       willBeSavedMessage.isFromMe = false;
       final toUserMessageMap = willBeSavedMessage.toMap();
 
-      await _firebaseDBService.collection("chats").doc(toUserDocID).set(
+      await _firebaseFirestore.collection("chats").doc(toUserDocID).set(
         {
           "fromUserID": willBeSavedMessage.toUserID,
           "toUserID": willBeSavedMessage.fromUserID,
@@ -119,7 +119,7 @@ class FireStoreDbService implements DBBase {
         },
       );
 
-      await _firebaseDBService
+      await _firebaseFirestore
           .collection("chats")
           .doc(toUserDocID)
           .collection("messages")
@@ -136,15 +136,15 @@ class FireStoreDbService implements DBBase {
 
   @override
   Stream<List<ChatModel>> getAllConversations(String? fromUserId) {
-    final querySnapshot = _firebaseDBService
+    final querySnapshot = _firebaseFirestore
         .collection("chats")
         .where("fromUserID", isEqualTo: fromUserId)
         .orderBy("createdDate", descending: true)
         .snapshots();
     var result = querySnapshot.map((userList) => userList.docs.map((chat) {
-          print("createdDate: ${chat.data()["createdDate"]}");
-          print("toUserID: ${chat.data()["toUserID"]}");
-          print("fromUserID: ${chat.data()["fromUserID"]}");
+          // print("createdDate: ${chat.data()["createdDate"]}");
+          // print("toUserID: ${chat.data()["toUserID"]}");
+          // print("fromUserID: ${chat.data()["fromUserID"]}");
           return ChatModel.fromMap(chat.data());
         }).toList());
 
@@ -153,8 +153,8 @@ class FireStoreDbService implements DBBase {
 
   @override
   Future<DateTime?> getServerDateTime(String? fromUserId) async {
-    await _firebaseDBService.collection("server").doc(fromUserId).set({"time": FieldValue.serverTimestamp()});
-    final readedMap = await _firebaseDBService.collection("server").doc(fromUserId).get();
+    await _firebaseFirestore.collection("server").doc(fromUserId).set({"time": FieldValue.serverTimestamp()});
+    final readedMap = await _firebaseFirestore.collection("server").doc(fromUserId).get();
     Timestamp? readedDateTime = readedMap.data()?["time"];
     print("result server time ${readedDateTime}");
     return readedDateTime?.toDate();
@@ -182,7 +182,7 @@ class FireStoreDbService implements DBBase {
     for (var snap in querySnapshot.docs) {
       UserModel user = UserModel.fromMap(snap.data() as Map<String, dynamic>);
       allUsers.add(user);
-     // print("getirilen userName: ${user.userName} - database service");
+      // print("getirilen userName: ${user.userName} - database service");
     }
 
     return allUsers;
@@ -250,5 +250,11 @@ class FireStoreDbService implements DBBase {
     //print(allMessages);
 
     return allMessages;
+  }
+
+  Future<String?> getTokenDB(String? toUserID) async{
+
+
+    return await _firebaseFirestore.doc("tokens/$toUserID").get().then((value) => value.data()?["token"]);
   }
 }

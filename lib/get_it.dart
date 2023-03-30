@@ -1,3 +1,5 @@
+import 'package:flutter_whatsapp_clone/service/notification/send_notification_service.dart';
+
 import 'service/release/firebase_storege_service.dart';
 
 import 'service/release/firestore_db_service.dart';
@@ -15,4 +17,5 @@ getItSetup() {
   getIt.registerLazySingleton(() => UserRepository());
   getIt.registerLazySingleton(() => FireStoreDbService());
   getIt.registerLazySingleton(() => FirebaseStorageService());
+  getIt.registerLazySingleton(() => SendingNotificationsService());
 }
