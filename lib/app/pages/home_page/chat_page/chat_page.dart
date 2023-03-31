@@ -44,7 +44,6 @@ class _ChatPageState extends State<ChatPage> {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _chatViewModelRead.getMessagesFirstrequest();
 
-    
     });
 
     _scrollController = ScrollController();
@@ -236,14 +235,14 @@ class _ChatPageState extends State<ChatPage> {
 
   void _sendMessageButton() async {
     if (_messageController.text.trim().isEmpty) return;
-    final willBeSavedMessage = MessageModel(
+    final sendingMessage = MessageModel(
       fromUserID: _chatViewModelRead.fromUser?.userId ?? "null",
       toUserID: _chatViewModelRead.toUser?.userId ?? "null",
       message: _messageController.text,
       isFromMe: true,
       //date: toMAp metodunda mevcut
     );
-    _chatViewModelRead.sendMessage(willBeSavedMessage);
+    _chatViewModelRead.sendMessage(sendingMessage);
 
     // _viewModelRead.getLastMessage(willBeSavedMessage.fromUserID, willBeSavedMessage.toUserID);
 

@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../models/chat_model.dart';
 
 import '../../models/message_model.dart';

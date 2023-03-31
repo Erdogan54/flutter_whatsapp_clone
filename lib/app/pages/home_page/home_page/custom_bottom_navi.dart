@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../../admob/banner_ad.dart';
 import 'tab_items.dart';
 
 // ignore: must_be_immutable
@@ -18,6 +20,7 @@ class MyCustomBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
           items: [

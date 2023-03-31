@@ -6,10 +6,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_whatsapp_clone/constants/my_const.dart';
 import 'package:flutter_whatsapp_clone/extensions/context_extension.dart';
+import 'package:flutter_whatsapp_clone/service/notification/receive_notifications.dart';
 import 'package:flutter_whatsapp_clone/view_model/all_user_view_model.dart';
 import 'package:flutter_whatsapp_clone/view_model/chat_view_model.dart';
 import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import '../../../../admob/banner_ad.dart';
 import '../../../../models/user_model.dart';
 import '../chat_page/chat_page.dart';
 
@@ -36,7 +39,6 @@ class _UsersPageState extends State<UsersPage> {
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _allUserViewModelRead.getAllUsers();
-
     });
 
     _scrollController.addListener(() {
@@ -61,45 +63,55 @@ class _UsersPageState extends State<UsersPage> {
 
   @override
   Widget build(BuildContext context) {
-    // print("page build");
+    var _bannerAd = BannerExampleState().loadAd();
     _allUserViewModelWatch = context.watch<AllUserViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: Text("Users - ${_allUserViewModelRead.allUser?.length}"),
-        actions: [
-          // IconButton(
-          //     onPressed: () {
-          //       _allUserViewModelRead.getMoreUser();
-          //     },
-          //     icon: const Icon(Icons.skip_next)),
-        ],
       ),
-      body: Consumer<AllUserViewModel>(
-        builder: (context, value, child) {
-          if (value.state == AllUserViewState.Busy) {
-            if (value.isFirstRequest == true) {
-              return Stack(
-                children: [
-                  Opacity(opacity: 0.5, child: _buildUserList(value)),
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ],
-              );
-            }
-            return _buildUserList(value);
-          }
+      body: Column(
+        children: [
+          Expanded(
+            child: Consumer<AllUserViewModel>(
+              builder: (context, value, child) {
+                if (value.state == AllUserViewState.Busy) {
+                  if (value.isFirstRequest == true) {
+                    return Stack(
+                      children: [
+                        Opacity(opacity: 0.5, child: _buildUserList(value)),
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ],
+                    );
+                  }
+                  return _buildUserList(value);
+                }
 
-          if (value.state == AllUserViewState.Loaded) {
-            if (value.allUser?.isEmpty ?? true) {
-              return _buildEmptyUserList();
-            }
-            return _buildUserList(value);
-          }
-          return const Center(
-            child: Text("bir hata oluştu"),
-          );
-        },
+                if (value.state == AllUserViewState.Loaded) {
+                  if (value.allUser?.isEmpty ?? true) {
+                    return _buildEmptyUserList();
+                  }
+                  return _buildUserList(value);
+                }
+                return const Center(
+                  child: Text("bir hata oluştu"),
+                );
+              },
+            ),
+          ),
+          if (_bannerAd != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                child: SizedBox(
+                  width: _bannerAd!.size.width.toDouble(),
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                ),
+              ),
+            )
+        ],
       ),
     );
   }

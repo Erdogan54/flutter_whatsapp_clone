@@ -88,12 +88,12 @@ class ChatViewModel with ChangeNotifier {
 
   Future<bool> sendMessage(MessageModel sendMessageModel) async {
     // sendMessageModel.date = (FieldValue.serverTimestamp() as Timestamp).toDate();
-
+    
     print(sendMessageModel);
     _allMessages.insert(0, sendMessageModel);
     notifyListeners();
 
-    return await _userRepo.sendMessage(sendMessageModel);
+    return await _userRepo.sendMessage(sendMessageModel,fromUser);
   }
 
   Future<List<MessageModel>?> getMessages() async {

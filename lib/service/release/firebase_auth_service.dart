@@ -15,17 +15,17 @@ class FirebaseAuthService extends AuthBase {
   bool _isSignGoogle = false;
 
   Future<UserModel?> _userFromFirebase(User? user) async {
-    print("user.email ${user?.email}");
-    print("user.displayName ${user?.displayName}");
-    print("user.emailVerified ${user?.emailVerified}");
-    print("user.isAnonymous ${user?.isAnonymous}");
-    print("user.metadata ${user?.metadata}");
-    print("user.phoneNumber ${user?.phoneNumber}");
-    print("user.photoURL ${user?.photoURL}");
-    print("user.providerData ${user?.providerData}");
-    print("user.refreshToken ${user?.refreshToken}");
-    print("user.tenantId ${user?.tenantId}");
-    print("user.uid ${user?.uid}");
+    // print("user.email ${user?.email}");
+    // print("user.displayName ${user?.displayName}");
+    // print("user.emailVerified ${user?.emailVerified}");
+    // print("user.isAnonymous ${user?.isAnonymous}");
+    // print("user.metadata ${user?.metadata}");
+    // print("user.phoneNumber ${user?.phoneNumber}");
+    // print("user.photoURL ${user?.photoURL}");
+    // print("user.providerData ${user?.providerData}");
+    // print("user.refreshToken ${user?.refreshToken}");
+    // print("user.tenantId ${user?.tenantId}");
+    // print("user.uid ${user?.uid}");
 
     if (user != null) {
       String? emailCreate() {

@@ -8,6 +8,7 @@ import 'package:flutter_whatsapp_clone/get_it.dart';
 import 'package:flutter_whatsapp_clone/models/message_model.dart';
 import 'package:flutter_whatsapp_clone/models/user_model.dart';
 import 'package:flutter_whatsapp_clone/service/base/auth_base.dart';
+import 'package:flutter_whatsapp_clone/service/notification/send_notification_service.dart';
 import 'package:flutter_whatsapp_clone/service/release/firebase_auth_service.dart';
 
 import '../constants/my_const.dart';
@@ -23,10 +24,12 @@ class UserRepository implements AuthBase {
   final _fireAuthService = getIt<FirebaseAuthService>();
   final _fireStoreDBService = getIt<FireStoreDbService>();
   final _firebaseStorageService = getIt<FirebaseStorageService>();
+  final _sendingNotificationService = getIt<SendingNotificationsService>();
 
   AppMode appMode = AppMode.RELEASE;
 
   List<UserModel> allUser = [];
+  Map<String, String> usersToken = {};
 
   @override
   Future<UserModel?>? currentUser() async {
@@ -156,11 +159,31 @@ class UserRepository implements AuthBase {
     return _fireStoreDBService.getMessages(fromUserID, toUserID);
   }
 
-  Future<bool> sendMessage(MessageModel sendMessageModel) async {
+  Future<bool> sendMessage(MessageModel sendMessageModel, UserModel? senderUser) async {
     if (appMode == AppMode.DEBUG) {
       return true;
     }
-    return await _fireStoreDBService.sendAndSaveMessage(sendMessageModel);
+    var result = await _fireStoreDBService.sendAndSaveMessage(sendMessageModel);
+    if (result) {
+      String? token;
+      if (sendMessageModel.toUserID != null) {
+        if (usersToken.containsKey(sendMessageModel.toUserID)) {
+          token = usersToken[sendMessageModel.toUserID];
+          print("local to user token $token");
+        } else {
+          token = await _fireStoreDBService.getTokenDB(sendMessageModel.toUserID);
+          print("cloud to user token $token");
+          if (token != null) {
+            usersToken[sendMessageModel.toUserID!] = token;
+          }
+        }
+        if (token != null && senderUser != null) {
+          await _sendingNotificationService.sendNotification(sendMessageModel, senderUser, token);
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   Stream<List<ChatModel>> getAllConversations({String? fromUserId}) {

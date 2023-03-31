@@ -13,14 +13,14 @@ import '../../../../constants/my_const.dart';
 import '../../../../view_model/user_view_model.dart';
 import '../chat_page/chat_page.dart';
 
-class ChattingUserListPage extends StatefulWidget {
-  const ChattingUserListPage({super.key});
+class ChattedUserListPage extends StatefulWidget {
+  const ChattedUserListPage({super.key});
 
   @override
-  State<ChattingUserListPage> createState() => _ChattingUserListPageState();
+  State<ChattedUserListPage> createState() => _ChattedUserListPageState();
 }
 
-class _ChattingUserListPageState extends State<ChattingUserListPage> {
+class _ChattedUserListPageState extends State<ChattedUserListPage> {
   late UserViewModel _userViewModelRead;
   late AllUserViewModel _allUserViewModelRead;
   late UserViewModel _userViewModelWatch;
