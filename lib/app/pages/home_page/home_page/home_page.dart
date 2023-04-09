@@ -44,19 +44,14 @@ class _HomePageState extends State<HomePage> {
     TabItem.profil: GlobalKey<NavigatorState>(),
   };
 
-   late AppLifecycleReactor _appLifecycleReactor;
-
+  late AppLifecycleReactor _appLifecycleReactor;
   @override
   void initState() {
     ReceiveNotificationService.instance.initLocalNotification(context);
     ReceiveNotificationService.instance.saveTokenToCloudDb();
 
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
-    _appLifecycleReactor = AppLifecycleReactor(
-      appOpenAdManager: appOpenAdManager)..listenToAppStateChanges();
-
-    
-    
+    _appLifecycleReactor = AppLifecycleReactor(appOpenAdManager: appOpenAdManager)..listenToAppStateChanges();
 
     super.initState();
   }

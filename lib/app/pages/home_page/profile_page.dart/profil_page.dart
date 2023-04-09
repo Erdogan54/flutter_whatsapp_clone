@@ -1,5 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_whatsapp_clone/admob/revarded_ad.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../../admob/app_lifecycle_reactor.dart';
+import '../../../../admob/app_open_ad_manager.dart';
+import '../../../../admob/banner_ad.dart';
+import '../../../../admob/rewarded_interstitial_ad.dart';
 import '../../../../common_widget/busy_progressbar.dart';
 import '../../../../common_widget/platform_duyarli_alert_dialog.dart';
 import '../../../../common_widget/social_login_button.dart';
@@ -29,6 +35,9 @@ class _ProfilPageState extends State<ProfilPage> {
 
     _controllerUserName = TextEditingController();
     _controllerUserName.text = _viewModelRead.user?.userName ?? "";
+
+    RewardedInterstitialExample().loadAd();
+
     super.initState();
   }
 
@@ -42,14 +51,42 @@ class _ProfilPageState extends State<ProfilPage> {
   Widget build(BuildContext context) {
     debugPrint("profil page build");
     _viewModelWatch = context.watch<UserViewModel>();
+
+    var _bannerAd = BannerExampleState().loadAd();
+
     return Stack(
       children: [
-        Scaffold(
-          appBar: AppBar(
-            title: const Text("Profil Sayfası"),
-            actions: [_signOutButton(context)],
-          ),
-          body: _buildBody(context),
+        Column(
+          children: [
+            Expanded(
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Profil Sayfası"),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          // RewardedInterstitialExample().showAdTrycount = 0;
+                          RewardedInterstitialExample().loadAd();
+                        },
+                        icon: const Icon(Icons.shop_two_rounded)),
+                    _signOutButton(context)
+                  ],
+                ),
+                body: _buildBody(context),
+              ),
+            ),
+            if (_bannerAd != null)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SafeArea(
+                  child: SizedBox(
+                    width: _bannerAd!.size.width.toDouble(),
+                    height: _bannerAd!.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd!),
+                  ),
+                ),
+              )
+          ],
         ),
         BusyProgressBar(isBusy: _viewModelWatch.isUpdateUserInfo),
       ],

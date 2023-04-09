@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_whatsapp_clone/admob/interstitial_ad.dart';
 import 'package:flutter_whatsapp_clone/constants/my_const.dart';
 import 'package:flutter_whatsapp_clone/extensions/context_extension.dart';
 import 'package:flutter_whatsapp_clone/service/notification/receive_notifications.dart';
@@ -12,6 +13,8 @@ import 'package:flutter_whatsapp_clone/view_model/chat_view_model.dart';
 import 'package:flutter_whatsapp_clone/view_model/user_view_model.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import '../../../../admob/app_lifecycle_reactor.dart';
+import '../../../../admob/app_open_ad_manager.dart';
 import '../../../../admob/banner_ad.dart';
 import '../../../../models/user_model.dart';
 import '../chat_page/chat_page.dart';
@@ -30,6 +33,8 @@ class _UsersPageState extends State<UsersPage> {
   late AllUserViewModel _allUserViewModelRead;
   late AllUserViewModel _allUserViewModelWatch;
 
+
+
   @override
   void initState() {
     _userViewModelRead = context.read<UserViewModel>();
@@ -45,6 +50,7 @@ class _UsersPageState extends State<UsersPage> {
       _scrollPosition();
     });
 
+  
     super.initState();
   }
 
@@ -64,10 +70,19 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     var _bannerAd = BannerExampleState().loadAd();
+    InterstitialExampleState.loadAd();
+
     _allUserViewModelWatch = context.watch<AllUserViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: Text("Users - ${_allUserViewModelRead.allUser?.length}"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                InterstitialExampleState.showAdTry();
+              },
+              icon: const Icon(Icons.shop_two_rounded))
+        ],
       ),
       body: Column(
         children: [
